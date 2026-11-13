@@ -39,6 +39,18 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--ln);bor
 .av.m,.av:not(.f){background:var(--m)}.av.f{background:var(--f)}
 .empty{color:var(--mu);padding:24px 0}
 .stat{margin:0 0 10px}
+.bgsw{width:64px;height:44px;border-radius:6px;border:1px solid var(--ln);display:block}.bgup{display:inline-block;padding:8px 12px;border:1px solid var(--ln);border-radius:8px;cursor:pointer;background:var(--cd)}.poster .tree{background:none!important}@media print{body,.tree{background:#fff!important}}
+.frs{display:flex;flex-wrap:wrap;gap:8px}.frb{display:grid;justify-items:center;gap:4px;padding:8px;min-width:88px}.frb.on{border-color:var(--pr);outline:2px solid var(--pr)}.frb .av{width:44px;height:44px}
+body .av.fr-circle{border-radius:50%}body .av.fr-square{border-radius:0}body .av.fr-rounded{border-radius:22%}
+body .av.fr-oval{border-radius:50%;aspect-ratio:3/4;height:auto}body .av.fr-ovalh{border-radius:50%;aspect-ratio:4/3;height:auto}body .av.fr-portrait{border-radius:8%;aspect-ratio:3/4;height:auto}body .av.fr-landscape{border-radius:8%;aspect-ratio:4/3;height:auto}
+.avrow{display:flex;gap:12px;align-items:center;margin:8px 0}.avrow .av{width:64px;height:64px;font-size:26px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}.chips button{min-height:32px;padding:3px 10px;font-size:13px}
+h2[id]{scroll-margin-top:130px}
+details.more{margin-top:8px}details.more summary{cursor:pointer;color:var(--mu);padding:6px 0}
+@media(max-width:600px){header{padding:6px 10px;gap:6px}h1{font-size:18px}header button{min-height:36px;padding:5px 10px}#st{font-size:12px}}
+.thu{color:#2f7d5b;font-weight:600}.chi{color:var(--r);font-weight:600}
+body[data-export="0"] [data-a=fxls],body[data-export="0"] [data-a=frep]{display:none!important}
+.rp h1{font-size:22px;text-align:center;margin:0}.rp h3{font-size:15px;margin:10px 0 4px}.rpt{width:100%;border-collapse:collapse;font-size:14px;margin:4px 0 12px}.rpt th,.rpt td{border:1px solid var(--ln);padding:5px 7px;text-align:left;vertical-align:top}.rpt .n{text-align:right;white-space:nowrap}.rpt tr.tt td{font-weight:700;background:var(--dd)}.sig{display:flex;justify-content:space-around;margin-top:48px;text-align:center}.sig div{min-width:40%}.rpt tr{break-inside:avoid}
 .tree{overflow:auto;text-align:center;padding:8px 0 20px}
 .tree>ul{display:inline-flex;padding-top:0}
 .tree ul{display:flex;justify-content:center;padding:18px 0 0;margin:0;position:relative}
@@ -131,6 +143,8 @@ table.mx{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:6px}.m
 #pp .lb{position:absolute;font:9pt/1.2 system-ui,sans-serif;color:#333;white-space:nowrap;overflow:hidden}
 #pp .ix{padding:20mm;font:12pt/1.5 system-ui,sans-serif}#pp .ix h2{font-size:20pt;margin:0 0 6mm}.ixt{border-collapse:collapse;margin:6mm 0}.ixt td{border:.4mm solid #444;width:24mm;height:16mm;text-align:center;font-size:16pt;font-weight:700}
 @media print{body.pp>*:not(#pp){display:none!important}#pp{position:static;background:#fff;overflow:visible}#pp .ppb{display:none}#pp .pgs{zoom:1;display:block;padding:0;gap:0}#pp .pg{box-shadow:none;break-after:page;page-break-after:always;margin:0}#pp .pg:last-child{break-after:auto;page-break-after:auto}#pp *{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.wz{max-height:78vh;overflow:auto}.wzp{display:flex;gap:4px;margin-bottom:6px}.wzp i{flex:1;height:5px;border-radius:3px;background:var(--ln)}.wzp i.d{background:var(--m)}.wzp i.c{background:var(--r)}
+.wzo{padding-left:20px;font-size:14px;margin:6px 0}.wzm{font-size:14px;margin:6px 0}.wzm.ok{color:#2f7d5b}.wzm.er{color:var(--r)}.wz code{background:var(--tg);padding:1px 5px;border-radius:4px;word-break:break-all;font-size:13px}.wz .wzn{margin-top:12px}.wz small a{cursor:pointer;text-decoration:underline}
 @media print{:root,:root[data-theme]{--bg:#fff;--ink:#1c2a33;--mu:#5f6e76;--ln:#b9c6c1;--cd:#fff;--m:#2c4a6b;--r:#a3302a;--tg:#dfe8f1;--tr:#f3dcda;--dd:#f6f7f6;color-scheme:light}header,.noprint,.chips,#nav{display:none}body{background:#fff}.ptitle{display:block;margin-bottom:8px}.tree{overflow:visible}.nd{-webkit-print-color-adjust:exact;print-color-adjust:exact;break-inside:avoid}}
 </style>
 </head>
@@ -166,12 +180,13 @@ const CFG={url:'',cid:''}; // quản trị viên có thể điền sẵn địa 
 const SRV=()=>SHARE?SHARE.s:(CFG.url||localStorage.gpurl||''),CID=()=>CFG.cid||localStorage.gpcid||'';
 const ROLE={share:'Bản chia sẻ (chỉ xem)','quan-tri':'Quản trị viên','de-xuat':'Thành viên (xem, gửi đề xuất sửa)','xem':'Chỉ xem'};
 let v=['list','tree','ev','cal'].includes(localStorage.gpstart)?localStorage.gpstart:'list',mt,pt,idt=SHARE?'':sessionStorage.gpt||'',role=SHARE?'share':SRV()?'':'local',rev=0,queue=[],members={},me='',deny='',offline=false,logs=[],inst=null,contact={},exportMap={},perm={},notify={admin:true,member:true,url:''},vmap={},defs={role:'de-xuat',contact:false,export:false},remind={on:false,lead:3,who:'admin'},remindMe=true,isOwner=false,bks=null,snap0=null,shares=[],shareName='';
-const FEAT=[['tree','Cây gia phả'],['ev','Sự kiện sắp tới'],['cal','Lịch âm dương'],['ho','Trang hộ gia đình'],['kin','Xưng hô'],['album','Album ảnh'],['stat','Thống kê và dòng thời gian'],['doc','Tài liệu đính kèm']];
-const can=f=>role=='local'||role=='quan-tri'||(role=='share'?f=='tree'||f=='stat':(vmap[role]||{})[f]!==false);
+const FEAT=[['tree','Cây gia phả'],['ev','Sự kiện sắp tới'],['cal','Lịch âm dương'],['ho','Trang hộ gia đình'],['kin','Xưng hô'],['album','Album ảnh'],['stat','Thống kê và dòng thời gian'],['doc','Tài liệu đính kèm'],['fund','Quỹ họ và quỹ khuyến học'],['ach','Bảng thành tích']];
+const FOFF=new Set(['fund','ach']),visOn=(r,f)=>FOFF.has(f)?(vmap[r]||{})[f]===true:(vmap[r]||{})[f]!==false; // quỹ và thành tích mặc định ẩn với thành viên, quản trị viên bật thì mới hiện
+const can=f=>role=='local'||role=='quan-tri'||(role=='share'?f=='tree'||f=='stat':visOn(role,f));
 const canEdit=()=>role=='local'||role=='quan-tri';
 const canExport=()=>role=='local'||role=='quan-tri'||!!perm.export;
 const gx=f=>(...a)=>canExport()?f(...a):msg('Bạn chưa được cấp quyền xuất danh sách. Hãy nhờ quản trị viên cấp quyền.');
-if(role===''&&!navigator.onLine&&localStorage.gprole){role='xem';offline=true}
+if(role===''&&!navigator.onLine&&localStorage.gprole){role='xem';offline=true;try{vmap=JSON.parse(localStorage.gpvis||'{}')}catch(e){}}
 const P=()=>db.people;
 const kids=id=>Object.values(P()).filter(p=>p.fid==id||p.mid==id);
 const spIds=p=>[...new Set([p.sid,...String(p.xs||'').split(',')].map(x=>String(x||'').trim()).filter(x=>x&&x!=p.id&&P()[x]))];
@@ -186,7 +201,7 @@ function normSp(){ // bảo đảm mọi quan hệ vợ/chồng đều có hai c
 const yr=s=>(s||'').slice(0,4);
 const life=p=>p.b||isD(p)?`${yr(p.b)||'?'}–${p.d?yr(p.d)||'?':isD(p)?'?':''}`:'';
 const byBirth=(a,b)=>(a.b||'9').localeCompare(b.b||'9');
-const av=p=>p.ph?`<img class="av" src="${esc(p.ph)}" alt="">`:`<span class="av ${p.g}">${esc((p.name||'?')[0])}</span>`;
+const av=p=>{const f=frOf(p);return p.ph?`<img class="av fr-${f}" src="${esc(p.ph)}" alt="">`:`<span class="av ${p.g} fr-${f}">${esc((p.name||'?')[0])}</span>`};
 const base=()=>role=='local'?'Chế độ trên máy này (chưa dùng máy chủ)':role?`${me||'Đã đăng nhập'}, ${ROLE[role]}${offline?' (ngoại tuyến, chỉ xem bản đã lưu)':''}`:'Chưa đăng nhập';
 const msg=t=>{$('#st').textContent=t||base();clearTimeout(mt);if(t)mt=setTimeout(()=>msg(),4000)};
 const dl=(n,t,m='application/json')=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click()};
@@ -312,17 +327,19 @@ function xhDlg(id){
 
 /* ---------- Views ---------- */
 function render(){
+  applyBg();
   document.body.dataset.role=role||'';document.body.dataset.contact=(canEdit()||perm.contact)?'1':'0';document.body.dataset.export=canExport()?'1':'0';$('#outb').hidden=true;document.body.style.zoom=localStorage.gpzoom||'';document.documentElement.dataset.theme=localStorage.gpthm||'';
   {const a=$('#accb');a.hidden=!role||role=='share';a.textContent=idt?'Tài khoản':'Đăng nhập'}
   if(role=='share'&&!['list','tree','stat'].includes(v))v='list';
-  if(role&&({tree:'tree',ev:'ev',cal:'cal',ho:'ho',stat:'stat'})[v]&&!can(v))v='list';
+  if(role&&role!='share'&&!canEdit()&&['set','chk','dup','log','adm'].includes(v))v='st';
+  if(role&&({tree:'tree',ev:'ev',cal:'cal',ho:'ho',stat:'stat',fund:'fund',ach:'ach',rep:'fund'})[v]&&!can(v))v='list';
   {const b=document.querySelector('[data-a=add]');b.textContent=role=='de-xuat'?'Đề xuất thêm người':'Thêm người';b.hidden=!(canEdit()||role=='de-xuat')}
   if(!role){$('#nav').innerHTML='';$('#m').innerHTML=loginView();setTimeout(mountLogin,0);return}
-  const tabs=[['list','Danh sách']];if(role=='share'){tabs.push(['tree','Cây'],['stat','Thống kê']);$('#nav').innerHTML=tabs.map(([k,t])=>`<button data-a="tab" data-i="${k}" class="${v==k?'on':''}">${t}</button>`).join('');$('#m').innerHTML=banner()+{list:vList,tree:vTree,stat:vStat}[v]();msg();return}if(can('tree'))tabs.push(['tree','Cây']);if(can('ev'))tabs.push(['ev','Sự kiện']);if(can('cal'))tabs.push(['cal','Lịch']);if(can('stat'))tabs.push(['stat','Thống kê']);
+  const tabs=[['list','Danh sách']];if(role=='share'){tabs.push(['tree','Cây'],['stat','Thống kê']);$('#nav').innerHTML=tabs.map(([k,t])=>`<button data-a="tab" data-i="${k}" class="${v==k?'on':''}">${t}</button>`).join('');$('#m').innerHTML=banner()+{list:vList,tree:vTree,stat:vStat}[v]();msg();return}if(can('tree'))tabs.push(['tree','Cây']);if(can('ev'))tabs.push(['ev','Sự kiện']);if(can('cal'))tabs.push(['cal','Lịch']);if(can('stat'))tabs.push(['stat','Thống kê']);if(can('fund'))tabs.push(['fund','Quỹ']);if(can('ach'))tabs.push(['ach','Thành tích']);
   if(role=='quan-tri'||role=='de-xuat'){const n=queue.filter(x=>x.status=='cho').length;tabs.push(['q',role=='quan-tri'?'Duyệt'+(n?` (${n})`:''):'Đề xuất'+(n?` (${n})`:'')]);if(role=='quan-tri')tabs.push(['adm','Quản trị'])}
-  {const n=canEdit()?checks().length:0;tabs.push(['set','Dữ liệu'+(n?` (${n})`:'')]);tabs.push(['st','Cài đặt'])}
-  $('#nav').innerHTML=tabs.map(([k,t])=>`<button data-a="tab" data-i="${k}" class="${v==k||(k=='set'&&(v=='chk'||v=='dup'))||(k=='adm'&&v=='log')?'on':''}">${t}</button>`).join('');
-  $('#m').innerHTML=banner()+{list:vList,tree:vTree,ev:vEv,cal:vCal,q:vQ,adm:vAdm,ho:vHo,stat:vStat,chk:vChk,dup:vDup,log:vLog,set:vSet,st:vCai}[v]();
+  {if(canEdit()){const n=checks().length;tabs.push(['set','Dữ liệu'+(n?` (${n})`:'')])}tabs.push(['st','Cài đặt'])}
+  $('#nav').innerHTML=tabs.map(([k,t])=>`<button data-a="tab" data-i="${k}" class="${v==k||(k=='set'&&(v=='chk'||v=='dup'))||(k=='adm'&&v=='log')||(k=='fund'&&v=='rep')?'on':''}">${t}</button>`).join('');
+  $('#m').innerHTML=banner()+{list:vList,tree:vTree,ev:vEv,cal:vCal,q:vQ,adm:vAdm,ho:vHo,stat:vStat,chk:vChk,dup:vDup,log:vLog,set:vSet,st:vCai,fund:vFund,ach:vAch,rep:vRep}[v]();
   msg();
 }
 const rows=q=>{q=norm(q||'');return Object.values(P())
@@ -393,7 +410,7 @@ function vSet0(){if(role=='de-xuat'||role=='xem')return vLite();return `<h2>Ki�
   <div class="act"><button data-a="tab" data-i="chk">Xem cảnh báo (${checks().length})</button><button data-a="tab" data-i="dup">Tìm người trùng (${dupPairs().length})</button></div>
   <small>Phát hiện con sinh trước cha mẹ, trùng người, vòng lặp quan hệ, năm sinh bất hợp lý…</small>
   <h2>Excel</h2>
-  <div class="act"><button data-a="xout">Xuất danh sách Excel</button><label class="btn" style="margin:0">Nhập từ Excel<input id="ximp" type="file" accept=".xlsx,.xls,.csv" hidden></label><button data-a="xtpl">Tải file mẫu</button></div>
+  <div class="act"><button data-a="xout">Xuất danh sách Excel</button><label class="btn" style="margin:0">Nhập từ Excel<input id="ximp" type="file" accept=".xlsx,.xls,.csv" hidden></label><button data-a="xtpl">Tải file mẫu</button><button data-a="bulk">Nhập nhanh bằng bảng</button></div>
   <small>Cột Mã dùng để khớp với người đã có (để trống nếu thêm mới). Cha, mẹ, vợ/chồng điền bằng Mã hoặc Tên (tên phải là duy nhất). Ngày nhập theo năm-tháng-ngày, ngày/tháng/năm hoặc chỉ năm. Khi nhập, ô trống sẽ xoá dữ liệu cũ của người đó; ảnh được giữ nguyên.</small>
   <h2>Sao lưu và chia sẻ</h2>
   <div class="act"><button data-a="expjson">Xuất JSON</button><label class="btn" style="margin:0">Nhập JSON<input id="imp" type="file" accept=".json" hidden></label><label class="btn" style="margin:0">Nhập GEDCOM<input id="gedin" type="file" accept=".ged,.gedcom" hidden></label><button data-a="ged">Xuất GEDCOM</button><button data-a="ics">Xuất lịch giỗ, sinh nhật (.ics)</button><button data-a="prn">In cây gia phả</button><button data-a="pdf">Xuất phả đồ PDF</button></div>`}
@@ -404,6 +421,7 @@ const fv=(k,x)=>k=='xs'?String(x||'').split(',').map(i=>(P()[i]||{}).name).filte
 function diff(x){const o=P()[x.pid]||{},n=x.person||{};
   return Object.keys(FL).filter(k=>x.op=='add'?n[k]:(k in n&&(n[k]||'')!=(o[k]||''))).map(k=>`${FL[k]}: ${x.op=='add'?'':esc(fv(k,o[k]))+' → '}${esc(fv(k,n[k]))}`).join('<br>')}
 function banner(){
+  {const w=WZ();if((role=='local'||role=='quan-tri')&&w.seen&&!w.fin&&!w.act&&v!='st')return '<div class="banner">Chưa hoàn tất cài đặt. <a data-a="wz" data-i="'+(WZSTEPS.find(x=>x[0]!='intro'&&x[0]!='done'&&!wzStatus(x[0]))||['intro'])[0]+'">Mở trình cài đặt</a></div>'}
   if(offline)return '<div class="banner w">Không có mạng: đang xem bản đã lưu trên máy này, chưa thể gửi đề xuất.</div>';
   if(role=='share')return `<div class="banner">Bản chia sẻ nhánh ${esc(shareName)}, chỉ để xem. Thông tin liên hệ, ghi chú và ảnh không được chia sẻ.</div>`;
   if(role=='xem')return '<div class="banner">Bạn chỉ có quyền xem. Cần chỉnh sửa, hãy nhờ quản trị viên nâng quyền.</div>';
@@ -415,10 +433,11 @@ function vAdm(){
   <div class="act" style="margin-top:0"><button class="pr" data-a="tab" data-i="q">Duyệt đề xuất${pend?` (${pend})`:''}</button><button data-a="logv">Nhật ký sửa đổi</button><button data-a="tab" data-i="chk">Kiểm tra dữ liệu</button><button data-a="reload">Tải lại dữ liệu</button></div>
   ${vMem()}
   ${SRV()&&CID()?`<h2>Liên kết mời</h2><label>Gửi liên kết này cho thành viên để họ khỏi phải nhập địa chỉ máy chủ<input id="invl" readonly value="${esc(location.origin+location.pathname+'?s='+encodeURIComponent(SRV())+'&c='+encodeURIComponent(CID()))}"></label><div class="act"><button data-a="cplink">Sao chép liên kết</button></div><small>Người nhận vẫn phải được mời bằng email Google ở mục bên dưới mới xem được gia phả.</small>`:''}`}
+const phLine=x=>x.person&&x.person.ph?`<small>Ảnh đại diện mới: <img class="av" src="${esc(x.person.ph)}" alt="" style="width:56px;height:56px;vertical-align:middle"></small>`:x.person&&x.person.ph===''?'<small>Xoá ảnh đại diện hiện tại</small>':'';
 function vQ(){
   const adm=role=='quan-tri',L={add:'Thêm',edit:'Sửa',del:'Xoá'},ST={cho:'Chờ duyệt',duyet:'Đã duyệt',tuchoi:'Từ chối',thuhoi:'Đã thu hồi'};
   const row=x=>`<div class="row" style="cursor:default;align-items:flex-start"><div style="flex:1"><b>${L[x.op]}: ${P()[x.pid]?`<a data-a="view" data-i="${x.pid}">${esc(x.name||P()[x.pid].name)}</a>`:esc(x.name)}</b> <span class="tag ${x.status=='cho'?'':'gio'}">${ST[x.status]}</span>
-    <small>${adm?esc(x.by)+', ':''}${new Date(x.at).toLocaleString('vi-VN')}</small><small>${x.op=='del'?'':diff(x)}</small>${x.note?`<small>Ghi chú: ${esc(x.note)}</small>`:''}${x.why?`<small>Lý do từ chối: ${esc(x.why)}</small>`:''}</div>
+    <small>${adm?esc(x.by)+', ':''}${new Date(x.at).toLocaleString('vi-VN')}</small><small>${x.op=='del'?'':diff(x)}</small>${phLine(x)}${x.note?`<small>Ghi chú: ${esc(x.note)}</small>`:''}${x.why?`<small>Lý do từ chối: ${esc(x.why)}</small>`:''}</div>
     ${adm&&x.status=='cho'?`<div style="display:grid;gap:4px"><button class="pr" data-a="ok" data-i="${x.id}">Duyệt</button><button data-a="no" data-i="${x.id}">Từ chối</button></div>`:''}${!adm&&x.status=='cho'?`<button data-a="cancel" data-i="${x.id}">Thu hồi</button>`:''}</div>`;
   const ps=queue.filter(x=>x.status=='cho'),hs=queue.filter(x=>x.status!='cho').slice(-20).reverse();
   return `<div class="bar noprint"><button data-a="reload">Tải lại danh sách</button></div><h2>${adm?'Chờ duyệt':'Đề xuất của tôi'}</h2>${ps.map(row).join('')||'<p class="empty">Không có đề xuất nào đang chờ duyệt.</p>'}${hs.length?'<h2>Đã xử lý</h2>'+hs.map(row).join(''):''}`}
@@ -506,8 +525,14 @@ function checks(){
     if(Y(p)&&!isD(p)&&now-Y(p)>110)add(p,'luu',`Sinh năm ${Y(p)} nhưng chưa đánh dấu đã mất`);
     for(const x of spAll(p)){const sp=P()[x];
       if(!sp)add(p,'loi','Vợ/chồng không còn trong gia phả');
-      else if(!spIds(sp).includes(p.id))add(p,'luu',`Quan hệ vợ/chồng với ${sp.name} chưa ghi nhận hai chiều`)}
+      else if(!spIds(sp).includes(p.id))add(p,'luu',`Quan hệ vợ/chồng với ${sp.name} chưa ghi nhận hai chiều`);
+      if(sp&&p.id<sp.id){const ay=Math.abs(Y(p)-Y(sp));
+        if(Y(p)&&Y(sp)&&ay>30)add(p,'luu',`Chênh lệch tuổi với vợ/chồng ${sp.name} là ${ay} năm`);
+        if(ancs(p.id).has(sp.id)||ancs(sp.id).has(p.id))add(p,'loi',`${sp.name} vừa là vợ/chồng vừa là tổ tiên hoặc con cháu`);
+        else if((p.fid&&p.fid==sp.fid)||(p.mid&&p.mid==sp.mid))add(p,'luu',`${sp.name} là vợ/chồng nhưng cùng cha hoặc cùng mẹ`)}}
     if(Y(p))(dup[norm(p.name)+'|'+Y(p)]=dup[norm(p.name)+'|'+Y(p)]||[]).push(p)}
+  {const sb={};for(const p of ps){const d=pd(p.b);if(d&&p.mid)(sb[p.mid]=sb[p.mid]||[]).push([jd(...d),p])}
+   for(const k in sb){const l=sb[k].sort((a,b)=>a[0]-b[0]);for(let i=1;i<l.length;i++){const g=l[i][0]-l[i-1][0];if(g>0&&g<270)add(l[i][1],'luu',`Sinh sau ${l[i-1][1].name} (cùng mẹ) chỉ ${g} ngày, ngắn hơn một thai kỳ`)}}}
   for(const k in dup)if(dup[k].length>1)dup[k].forEach(p=>add(p,'luu',`Có thể trùng với ${dup[k].filter(x=>x!=p).map(x=>x.name).join(', ')} (cùng tên và năm sinh)`));
   return out}
 function vChk(){
@@ -517,11 +542,11 @@ function vChk(){
   +c.map(x=>`<div class="row" data-a="view" data-i="${x.id}">${av(P()[x.id])}<div><b>${esc(P()[x.id].name)}</b> <span class="tag ${x.t=='loi'?'gio':''}">${x.t=='loi'?'Lỗi':'Lưu ý'}</span><small>${esc(x.m)}</small></div></div>`).join('')}
 
 /* ---------- Nhật ký sửa đổi, cài app, xuất PDF ---------- */
-const LA={them:'Thêm',sua:'Sửa',xoa:'Xoá',duyet:'Duyệt đề xuất',tuchoi:'Từ chối đề xuất',dexuat:'Đề xuất',tv:'Thành viên',nhieu:'Nhiều thay đổi',thuhoi:'Thu hồi đề xuất'},LF={...FL,al:'Album ảnh',ph:'Ảnh đại diện',fl:'Tài liệu'},OPW={add:'thêm',edit:'sửa',del:'xoá'};
+const LA={them:'Thêm',sua:'Sửa',xoa:'Xoá',duyet:'Duyệt đề xuất',tuchoi:'Từ chối đề xuất',dexuat:'Đề xuất',tv:'Thành viên',nhieu:'Nhiều thay đổi',thuhoi:'Thu hồi đề xuất',quy:'Quỹ họ, khuyến học',tl:'Thành tích'},LF={...FL,al:'Album ảnh',ph:'Ảnh đại diện',fr:'Khung ảnh',fl:'Tài liệu'},OPW={add:'thêm',edit:'sửa',del:'xoá'};
 function vLog(){
   return `<div class="bar noprint"><button data-a="tab" data-i="adm">‹ Quản trị</button></div><h2>Nhật ký sửa đổi</h2>
-  <small style="margin-bottom:8px">Ghi lại ai thêm, sửa, xoá, duyệt gì và lúc nào. Chỉ ghi tên trường đã đổi, không ghi nội dung. Hiện tối đa 300 mục gần nhất.</small>`
-  +[...logs].reverse().map(x=>`<div class="row" style="cursor:default"><div><b>${LA[x.act]||esc(x.act)}${x.op?' '+(OPW[x.op]||''):''}: ${esc(x.n)}</b><small>${new Date(x.at).toLocaleString('vi-VN')}, ${esc(x.by)}${x.from?`, người đề xuất ${esc(x.from)}`:''}</small>${x.f&&x.f.length?`<small>${x.f.map(k=>esc(LF[k]||k)).join(', ')}</small>`:''}</div></div>`).join('')||'<p class="empty">Chưa có thay đổi nào được ghi lại.</p>'}
+  <small style="margin-bottom:8px">Ghi lại ai thêm, sửa, xoá, duyệt gì và lúc nào, kèm giá trị cũ để hoàn tác một sửa đổi (chỉ quản trị viên xem được). Hiện tối đa 300 mục gần nhất; lịch sử riêng của từng người nằm trong hồ sơ người đó.</small>`
+  +([...logs].map((x,i)=>logRow(x,'l:'+i)).reverse().join('')||'<p class="empty">Chưa có thay đổi nào được ghi lại.</p>')}
 const vInst=()=>`<h2>Cài app, dùng khi không có mạng</h2>${inst?'<div class="act"><button class="pr" data-a="inst">Cài ứng dụng</button></div>':''}<small>iPhone: bấm Chia sẻ rồi Thêm vào MH chính. Android hoặc Chrome trên máy tính: menu ba chấm rồi Cài đặt ứng dụng. Sau khi cài, app mở được cả khi mất mạng (nếu dùng máy chủ thì ở chế độ chỉ xem bản đã lưu).</small>`;
 function vSet(){return vSet0()}
 
@@ -559,7 +584,11 @@ function vShare(){
   <div class="act"><button class="pr" data-a="shnew">Tạo liên kết</button></div>
   ${shares.map(x=>`<div class="row" style="cursor:default;flex-wrap:wrap"><div style="flex:1 1 100%"><b>Nhánh ${esc(x.name)}</b><small>${x.depth?x.depth+' đời':'Tất cả con cháu'}, tạo ${new Date(x.at).toLocaleDateString('vi-VN')}</small>
     <input readonly value="${esc(base0+'?share='+x.token+'&s='+encodeURIComponent(SRV()))}" style="font-size:12px"></div><button data-a="shcp" data-i="${x.token}">Sao chép liên kết</button><button class="dg" data-a="shdel" data-i="${x.token}">Thu hồi</button></div>`).join('')}`}
-function vCai(){
+const vXuat=()=>`<h2>Quyền của bạn và xuất dữ liệu</h2><p><small>${perm.contact?'Được xem thông tin liên hệ và nơi ở':'Không được xem thông tin liên hệ và nơi ở (do quản trị viên quy định)'}</small><small>${perm.export?'Được xuất danh sách':'Không được xuất danh sách (do quản trị viên quy định)'}</small></p><div class="act"><button data-a="xout">Xuất danh sách Excel</button><button data-a="ics">Xuất lịch (.ics)</button></div>`;
+function secNav(h){let n=0;const t=[];h=h.replace(/<h2>(.*?)<\/h2>/g,(m,x)=>{n++;t.push([n,x.replace(/<[^>]+>/g,'')]);return `<h2 id="sec${n}">${x}</h2>`});
+  return t.length>3?`<div class="chips noprint">${t.map(([i,x])=>`<button data-a="goto" data-i="sec${i}">${x}</button>`).join('')}</div>`+h:h}
+function vCai(){return secNav(vCai0())}
+function vCai0(){
   const adm=role=='quan-tri',days=+localStorage.gpev||30,lim=+localStorage.gpl||0,zm=localStorage.gpzoom||'',st=localStorage.gpstart||'list';
   const o=(arr,cur)=>arr.map(([k,t])=>`<option value="${k}"${String(k)==String(cur)?' selected':''}>${t}</option>`).join('');
   const acc=idt?`<p><b>${esc(me||jwtMail())}</b><small>${esc(ROLE[role]||'')}${offline?' (ngoại tuyến, chỉ xem bản đã lưu)':''}</small></p><div class="act"><button data-a="out">Đăng xuất</button></div>`
@@ -567,13 +596,13 @@ function vCai(){
   const mx=adm?`<h2>Chức năng hiển thị theo mức phân quyền</h2>
   <small style="margin-bottom:8px">Đánh dấu = mức đó nhìn thấy chức năng. Quản trị viên luôn thấy tất cả. Thành viên bị bỏ chức năng nào thì thanh menu và nút của chức năng đó ẩn đi. Quyền xem thông tin liên hệ và quyền xuất danh sách đặt riêng cho từng người ở tab Quản trị và do máy chủ bảo đảm; còn mục này chỉ ẩn hiện giao diện.</small>
   <table class="mx"><tr><th>Chức năng</th><th>Chỉ xem</th><th>Thành viên</th><th>Quản trị</th></tr>
-  ${FEAT.map(([f,t])=>`<tr><td>${t}</td>${['xem','de-xuat'].map(r=>`<td><input type="checkbox" data-vis="${r}:${f}" aria-label="${t}, ${r=='xem'?'chỉ xem':'thành viên'}"${(vmap[r]||{})[f]===false?'':' checked'}></td>`).join('')}<td><input type="checkbox" checked disabled></td></tr>`).join('')}</table>
+  ${FEAT.map(([f,t])=>`<tr><td>${t}</td>${['xem','de-xuat'].map(r=>`<td><input type="checkbox" data-vis="${r}:${f}" aria-label="${t}, ${r=='xem'?'chỉ xem':'thành viên'}"${visOn(r,f)?' checked':''}></td>`).join('')}<td><input type="checkbox" checked disabled></td></tr>`).join('')}</table>
   <h2>Mặc định khi mời thành viên mới</h2>
   <label>Mức quyền<select id="dr">${o([['de-xuat','Thành viên (xem, gửi đề xuất sửa)'],['xem','Chỉ xem']],defs.role)}</select></label>
   <label class="chk"><input type="checkbox" id="dc"${defs.contact?' checked':''}> Cho xem thông tin liên hệ và nơi ở</label>
   <label class="chk"><input type="checkbox" id="de"${defs.export?' checked':''}> Cho phép xuất danh sách</label>
   <div class="act"><button class="pr" data-a="vissave">Lưu cài đặt phân quyền</button><button data-a="tab" data-i="adm">Quản lý từng thành viên</button></div>`:'';
-  return `<h2>Tài khoản</h2>${acc}${role=='local'||adm?vSrv():''}
+  return `${(role=='local'||adm)?wzList():''}<h2>Tài khoản</h2>${acc}${role=='local'||adm?vSrv():''}${!canEdit()&&role&&role!='share'?vXuat():''}${canEdit()?vFrame()+vBg():''}
   <h2>Hiển thị (riêng cho thiết bị này)</h2>
   <label>Màn hình khi mở app<select id="sstart">${o([['list','Danh sách'],['tree','Cây'],['ev','Sự kiện'],['cal','Lịch']].filter(x=>x[0]=='list'||can(x[0])),st)}</select></label>
   ${can('ev')?`<label>Sự kiện sắp tới hiển thị trong<select id="evd">${o(EVD,days)}</select></label>`:''}
@@ -581,6 +610,132 @@ function vCai(){
   <label>Giao diện<select id="thm">${o([['','Theo thiết bị'],['light','Sáng'],['dark','Tối']],localStorage.gpthm||'')}</select></label>
   <label>Cỡ chữ<select id="szm">${o([['','Chuẩn'],['1.1','Lớn'],['1.25','Rất lớn']],zm)}</select></label>
   ${mx}${adm?vNot():''}${SRV()&&idt&&!offline?vRem():''}${vShare()}${vBk()}${vInst()}`}
+
+/* ---------- Trình cài đặt: làm từng bước, bỏ qua được, mở lại bất cứ lúc nào trong Cài đặt ---------- */
+/*GS_SRC_BEGIN*/const GS_SRC="/**\n * GIA PHẢ - MÁY CHỦ TRÊN GOOGLE APPS SCRIPT\n * Chạy bằng tài khoản Google của quản trị viên; toàn bộ dữ liệu nằm trong Drive của tài khoản này.\n * Cách dùng: script.google.com > Dự án mới > dán toàn bộ tệp này > điền CLIENT_ID bên dưới >\n * Triển khai > Tùy chọn triển khai mới > Ứng dụng web > Thực thi với tư cách: Tôi; Quyền truy cập: Bất kỳ ai\n * > Triển khai > cấp quyền > sao chép URL (kết thúc bằng /exec) dán vào ứng dụng.\n * Mọi quyền được kiểm tra tại đây: người lạ không đọc hay ghi được dù biết địa chỉ.\n */\nconst CLIENT_ID = 'DÁN_CLIENT_ID_VÀO_ĐÂY.apps.googleusercontent.com';\nconst FILE = 'giapha-data.json', FOLDER = 'giapha-anh';\nconst FIELDS = ['name', 'hu', 'tu', 'th', 'bd', 'src', 'cf', 'g', 'b', 'bp', 'pl', 'chi', 'd', 'gd', 'gm', 'bur', 'dead', 'rs', 'tel', 'mail', 'ct', 'job', 'edu', 'wp', 'fid', 'mid', 'sid', 'xs', 'note', 'ph', 'fr'];\n\n// Làm sạch nội dung do thành viên gửi lên: chỉ nhận các trường đã biết, giới hạn độ dài, bỏ quan hệ trỏ tới người không tồn tại\nconst MAXLEN = { xs: 300, src: 500, hu: 100, tu: 100, th: 100, bd: 200, cf: 2, note: 2000, bur: 300, pl: 300, bp: 300, rs: 300, ct: 300, wp: 300, job: 200, edu: 200, mail: 200, chi: 100 };\nconst PID_RE = /^[A-Za-z0-9_-]{3,24}$/;\nfunction clean_(person, db, pid) {\n  const o = {};\n  FIELDS.forEach(k => {\n    if (k == 'ph' || person[k] === undefined || person[k] === null) return;\n    o[k] = String(person[k]).slice(0, MAXLEN[k] || 100);\n  });\n  delete o.fr; // khung ảnh do quản trị viên quyết định, thành viên không đặt được\n  if (person.ph === '') o.ph = ''; else if (okImg_(person.ph)) o.ph = person.ph; // '' = xin xoá ảnh đại diện\n  if (o.g && o.g != 'm' && o.g != 'f') o.g = 'm';\n  if (o.cf && o.cf != 'kc' && o.cf != 'nv') o.cf = '';\n  ['fid', 'mid', 'sid'].forEach(k => { if (o[k] && (o[k] == pid || !db.people[o[k]])) o[k] = ''; });\n  if (o.xs) o.xs = o.xs.split(',').map(x => x.trim()).filter((x, i, a) => x && x != pid && db.people[x] && a.indexOf(x) == i).slice(0, 10).join(',');\n  return o;\n}\nconst MAX_PENDING = 30;\n// Ảnh đại diện gửi kèm đề xuất: chỉ nhận ảnh nhỏ dạng data URL, tối đa 40.000 ký tự\nfunction okImg_(s) { return typeof s == 'string' && s.length <= 40000 && /^data:image\\/(jpeg|png|webp);base64,[A-Za-z0-9+\\/=]+$/.test(s); }\n\n// Thông tin liên hệ: chỉ quản trị viên và người được cấp quyền mới nhận được (máy chủ cắt bỏ trước khi gửi đi)\nconst CONTACT = ['rs', 'tel', 'mail', 'ct', 'wp'];\nfunction strip_(db) {\n  const o = { people: {}, updated: db.updated };\n  for (const k in db.people) { const p = Object.assign({}, db.people[k]); CONTACT.forEach(f => delete p[f]); o.people[k] = p; }\n  return o;\n}\n\n// ---- Thông báo email (chỉ gửi tên người, loại thay đổi, tên trường; không gửi nội dung như số điện thoại) ----\nconst LBL = { fr: 'Khung ảnh', ph: 'Ảnh đại diện', name: 'Họ tên', hu: 'Tên húy', tu: 'Tên tự', th: 'Tên thụy, hiệu', bd: 'Tên gọi khác', src: 'Nguồn', cf: 'Độ tin cậy', g: 'Giới tính', b: 'Ngày sinh', bp: 'Nơi sinh', pl: 'Quê quán', chi: 'Chi, phái', d: 'Ngày mất', gd: 'Giỗ (ngày)', gm: 'Giỗ (tháng)', bur: 'Nơi an táng', dead: 'Đã mất', rs: 'Nơi ở hiện tại', tel: 'Điện thoại', mail: 'Email', ct: 'Liên hệ khác', job: 'Nghề nghiệp', edu: 'Học vấn', wp: 'Nơi làm việc', fid: 'Cha', mid: 'Mẹ', sid: 'Vợ/chồng', xs: 'Vợ/chồng khác', note: 'Ghi chú', fl: 'Tài liệu' };\nconst OPV = { add: 'thêm người', edit: 'sửa thông tin', del: 'xoá người' };\nfunction nt_(d) { return Object.assign({ admin: true, member: true, url: '' }, d.notify || {}); }\nfunction mail_(to, subject, body) {\n  try {\n    if (!to || MailApp.getRemainingDailyQuota() < 1) return;\n    MailApp.sendEmail(to, String(subject).replace(/[\\r\\n]+/g, ' ').slice(0, 150), body);\n  } catch (e) { /* lỗi gửi thư không được làm hỏng thao tác chính */ }\n}\nfunction link_(n) { return n.url ? '\\n\\nMở ứng dụng: ' + n.url : ''; }\n\n// ---- Nhật ký sửa đổi: chỉ ghi tên trường đã đổi, không ghi nội dung (tránh lộ số điện thoại, địa chỉ) ----\nfunction changed_(a, b) { return FIELDS.filter(k => String(a[k] || '') != String(b[k] || '')); }\nfunction albumIds_(p) { return (p.al || []).map(x => x.id).join(','); }\nfunction flIds_(p) { return (p.fl || []).map(x => x.id).join(','); }\n// Giá trị cũ chỉ nằm trong nhật ký (chỉ quản trị viên đọc được) để quản trị viên hoàn tác một sửa đổi; không lưu ảnh\nfunction oldVals_(a, f) { const o = {}; f.forEach(k => { if (k != 'ph' && FIELDS.indexOf(k) >= 0) o[k] = String(a[k] || '').slice(0, 500); }); return o; }\nfunction snap_(a) { const o = oldVals_(a, FIELDS); o.id = a.id; return o; }\nfunction diff_(a, b) {\n  const A = (a && a.people) || {}, B = (b && b.people) || {}, out = [];\n  for (const k in B) {\n    if (!A[k]) out.push({ act: 'them', n: B[k].name, id: k });\n    else { const f = changed_(A[k], B[k]); if (albumIds_(A[k]) != albumIds_(B[k])) f.push('al'); if (flIds_(A[k]) != flIds_(B[k])) f.push('fl'); if (f.length) out.push({ act: 'sua', n: B[k].name, id: k, f: f, old: oldVals_(A[k], f) }); }\n  }\n  for (const k in A) if (!B[k]) out.push({ act: 'xoa', n: A[k].name, id: k, p: snap_(A[k]) });\n  return out;\n}\nfunction log_(d, arr) { d.log = (d.log || []).concat(arr).slice(-500); }\n\n// ---- Âm lịch (thuật toán Hồ Ngọc Đức, múi giờ +7), dùng để nhắc giỗ và sinh nhật ----\nconst TZ = 7, INT = Math.floor;\nfunction jd(d, m, y) { const a = INT((14 - m) / 12), Y = y + 4800 - a, M = m + 12 * a - 3; return d + INT((153 * M + 2) / 5) + 365 * Y + INT(Y / 4) - INT(Y / 100) + INT(Y / 400) - 32045; }\nfunction jdd(j) { const a = j + 32044, b = INT((4 * a + 3) / 146097), c = a - INT(b * 146097 / 4), d = INT((4 * c + 3) / 1461), e = c - INT(1461 * d / 4), m = INT((5 * e + 2) / 153); return [e - INT((153 * m + 2) / 5) + 1, m + 3 - 12 * INT(m / 10), b * 100 + d - 4800 + INT(m / 10)]; }\nfunction nm(k) {\n  const T = k / 1236.85, T2 = T * T, T3 = T2 * T, r = Math.PI / 180, S = x => Math.sin(x * r);\n  const J = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3 + 0.00033 * S(166.56 + 132.87 * T - 0.009173 * T2);\n  const M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3, Mp = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3, F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;\n  const C = (0.1734 - 0.000393 * T) * S(M) + 0.0021 * S(2 * M) - 0.4068 * S(Mp) + 0.0161 * S(2 * Mp) - 0.0004 * S(3 * Mp) + 0.0104 * S(2 * F) - 0.0051 * S(M + Mp) - 0.0074 * S(M - Mp) + 0.0004 * S(2 * F + M) - 0.0004 * S(2 * F - M) - 0.0006 * S(2 * F + Mp) + 0.001 * S(2 * F - Mp) + 0.0005 * S(2 * Mp + M);\n  const dt = T < -11 ? 0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3 - 0.000000081 * T * T3 : -0.000278 + 0.000265 * T + 0.000262 * T2;\n  return INT(J + C - dt + .5 + TZ / 24);\n}\nfunction sl(j) {\n  const T = (j - 2451545.5 - TZ / 24) / 36525, T2 = T * T, r = Math.PI / 180, M = 357.5291 + 35999.0503 * T - 0.0001559 * T2 - 0.00000048 * T * T2, L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;\n  const DL = (1.9146 - 0.004817 * T - 0.000014 * T2) * Math.sin(r * M) + (0.019993 - 0.000101 * T) * Math.sin(r * 2 * M) + 0.00029 * Math.sin(r * 3 * M);\n  let L = (L0 + DL) * r; L -= Math.PI * 2 * INT(L / (Math.PI * 2)); return INT(L / Math.PI * 6);\n}\nfunction m11(y) { const k = INT((jd(31, 12, y) - 2415021) / 29.530588853); let n = nm(k); if (sl(n) >= 9) n = nm(k - 1); return n; }\nfunction leapOff(a) { const k = INT((a - 2415021.076998695) / 29.530588853 + .5); let last, i = 1, arc = sl(nm(k + i)); do { last = arc; i++; arc = sl(nm(k + i)); } while (arc != last && i < 14); return i - 1; }\nfunction s2l(d, m, y) {\n  const dn = jd(d, m, y), k = INT((dn - 2415021.076998695) / 29.530588853); let ms = nm(k + 1); if (ms > dn) ms = nm(k);\n  let a = m11(y), b = a, ly; if (a >= ms) { ly = y; a = m11(y - 1); } else { ly = y + 1; b = m11(y + 1); }\n  const df = INT((ms - a) / 29); let lm = df + 11, lp = 0;\n  if (b - a > 365) { const lo = leapOff(a); if (df >= lo) { lm = df + 10; if (df == lo) lp = 1; } }\n  if (lm > 12) lm -= 12; if (lm >= 11 && df < 4) ly--; return [dn - ms + 1, lm, ly, lp];\n}\nfunction pd_(s) { return /^\\d{4}-\\d\\d-\\d\\d$/.test(s || '') ? [+s.slice(8), +s.slice(5, 7), +s.slice(0, 4)] : null; }\nfunction gioDM_(p) { if (p.gd && p.gm) return [+p.gd, +p.gm]; const x = pd_(p.d); if (!x) return null; const l = s2l(x[0], x[1], x[2]); return [l[0], l[1]]; }\n// ngày dương lịch cho ngày lunar (d, m) có phải là ngày giỗ g không (giỗ ngày 30 lùi về ngày 29 nếu tháng thiếu)\nfunction gioHit_(g, s) {\n  const l = s2l(s[0], s[1], s[2]); if (l[3] || l[1] != g[1]) return false;\n  if (l[0] == g[0]) return true;\n  if (g[0] == 30 && l[0] == 29) { const n = jdd(jd(s[0], s[1], s[2]) + 1), ln = s2l(n[0], n[1], n[2]); return ln[0] == 1; }\n  return false;\n}\nfunction leap_(y) { return new Date(Date.UTC(y, 2, 0)).getUTCDate() == 29; }\nfunction isDead_(p) { return !!(p.dead || p.d); }\n\n// ---- Sao lưu tự động trên Drive: mỗi ngày một bản (khi có thay đổi hoặc khi chạy nhắc việc), giữ 30 bản gần nhất ----\nconst BKFOLDER = 'giapha-saoluu', BKKEEP = 30;\nfunction bkFolder_() { const it = DriveApp.getFoldersByName(BKFOLDER); return it.hasNext() ? it.next() : DriveApp.createFolder(BKFOLDER); }\nfunction backup_(d, why) {\n  try {\n    const now = Date.now();\n    if (!why && d.lastBk && now - d.lastBk < 20 * 3600000) return false;\n    const f = bkFolder_(), stamp = new Date(now + 7 * 3600000).toISOString().replace(/[-:T]/g, '').slice(0, 14);\n    f.createFile('giapha-' + stamp + (why ? '-' + why : '') + '.json', JSON.stringify({ at: now, rev: d.rev, n: Object.keys(d.db.people).length, db: d.db, fund: d.fund || undefined }), 'application/json');\n    d.lastBk = now;\n    const all = []; const it = f.getFiles(); while (it.hasNext()) { const x = it.next(); all.push({ f: x, n: x.getName() }); }\n    all.sort((a, b) => a.n < b.n ? 1 : -1); all.slice(BKKEEP).forEach(x => x.f.setTrashed(true));\n    return true;\n  } catch (e) { return false; }\n}\nfunction bkList_() {\n  const out = [], it = bkFolder_().getFiles();\n  while (it.hasNext()) { const x = it.next(); out.push({ id: x.getId(), name: x.getName(), size: x.getSize() }); }\n  return out.sort((a, b) => a.name < b.name ? 1 : -1);\n}\n\n// ---- Email nhắc giỗ và sinh nhật: chạy hằng ngày lúc 7 giờ sau khi quản trị viên chạy hàm setupReminders một lần ----\nfunction rm_(d) { return Object.assign({ on: false, lead: 3, who: 'admin' }, d.remind || {}); }\nfunction remindLines_(d, T, off, label) {\n  const s = jdd(jd(T[0], T[1], T[2]) + off), out = [], P = d.db.people;\n  const dt = s[0] + '/' + s[1] + '/' + s[2], l = s2l(s[0], s[1], s[2]), lt = l[0] + '/' + l[1] + (l[3] ? ' nhuận' : '');\n  for (const k in P) {\n    const p = P[k], b = pd_(p.b);\n    if (b && !isDead_(p) && ((b[0] == s[0] && b[1] == s[1]) || (b[0] == 29 && b[1] == 2 && s[0] == 28 && s[1] == 2 && !leap_(s[2])))) out.push('- Sinh nhật ' + p.name + ' (tròn ' + (s[2] - b[2]) + ' tuổi)');\n    const g = gioDM_(p);\n    if (g && gioHit_(g, s)) { const y = +String(p.d || '').slice(0, 4); out.push('- Giỗ ' + p.name + (y ? ' (' + (s[2] - y) + ' năm)' : '')); }\n  }\n  return out.length ? [label + ': ' + dt + ' dương lịch, ' + lt + ' âm lịch'].concat(out) : [];\n}\nfunction daily_(nowMs, force) {\n  const lock = LockService.getScriptLock(); lock.waitLock(20000);\n  try {\n    const d = read_(), R = rm_(d), n = typeof nowMs == 'number' ? nowMs : Date.now();\n    let sent = 0;\n    if (R.on) {\n      const t = new Date(n + 7 * 3600000), T = [t.getUTCDate(), t.getUTCMonth() + 1, t.getUTCFullYear()], key = T[2] + '-' + T[1] + '-' + T[0];\n      if (d.lastRemind != key || force) {\n        const lines = remindLines_(d, T, 0, 'Hôm nay').concat(R.lead > 0 ? remindLines_(d, T, R.lead, 'Sau ' + R.lead + ' ngày') : []);\n        d.lastRemind = key;\n        if (lines.length) {\n          const to = [owner_()];\n          if (R.who == 'all') Object.keys(d.members || {}).forEach(e => { if (!(d.remindOff && d.remindOff[e])) to.push(e); });\n          if (d.remindOff && d.remindOff[owner_()]) to.shift();\n          const body = lines.join('\\n') + link_(nt_(d)) + '\\n\\nBạn có thể tắt email nhắc trong tab Cài đặt của ứng dụng.';\n          to.forEach(e => { mail_(e, 'Gia phả: nhắc giỗ, sinh nhật', body); sent++; });\n        }\n      }\n    }\n    backup_(d);\n    write_(d);\n    return sent;\n  } finally { lock.releaseLock(); }\n}\nfunction ensureTrigger_() {\n  if (!ScriptApp.getProjectTriggers().some(t => t.getHandlerFunction() == 'daily_')) ScriptApp.newTrigger('daily_').timeBased().everyDays(1).atHour(7).create();\n}\nfunction setupReminders() {\n  ScriptApp.getProjectTriggers().forEach(t => { if (t.getHandlerFunction() == 'daily_') ScriptApp.deleteTrigger(t); });\n  ScriptApp.newTrigger('daily_').timeBased().everyDays(1).atHour(7).create();\n}\n\n// ---- Liên kết chia sẻ một nhánh (xem không cần đăng nhập): chỉ trả tên, giới tính, năm sinh/mất và quan hệ, không có liên hệ, ghi chú, ảnh ----\nconst FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'audio/mpeg', 'audio/mp4', 'audio/x-m4a', 'audio/wav', 'video/mp4', 'text/plain'];\nconst FILE_FOLDER = 'giapha-tailieu', MAX_FILE = 8 * 1024 * 1024, ID_RE = /^[A-Za-z0-9_-]{4,40}$/;\nfunction fileFolder_() { const it = DriveApp.getFoldersByName(FILE_FOLDER); return it.hasNext() ? it.next() : DriveApp.createFolder(FILE_FOLDER); }\nfunction shareList_(d) { return Object.keys(d.shares || {}).map(k => Object.assign({ token: k }, d.shares[k])).sort((a, b) => b.at - a.at); }\nfunction shared_(q) {\n  const d = read_(), tk = String(q.token || ''), sh = /^[A-Za-z0-9]{8,64}$/.test(tk) && d.shares && d.shares[tk];\n  if (!sh || !d.db.people[sh.root]) return { err: 'Liên kết không còn hiệu lực' };\n  const P = d.db.people, set = {}, kidsOf = id => Object.keys(P).filter(k => P[k].fid == id || P[k].mid == id);\n  set[sh.root] = 1;\n  let fr = [sh.root];\n  for (let g = 1; fr.length && (!sh.depth || g < sh.depth); g++) {\n    const nx = [];\n    fr.forEach(id => {\n      const sp = spouses_(P[id]).filter(s => P[s]);\n      sp.forEach(s => { set[s] = 1; });\n      kidsOf(id).concat.apply([], sp.map(s => kidsOf(s).filter(k => { const o = P[k].fid == s ? P[k].mid : P[k].fid; return !o || o == id; }))).forEach(k => { if (!set[k]) { set[k] = 1; nx.push(k); } });\n    });\n    fr = nx;\n  }\n  Object.keys(set).forEach(id => spouses_(P[id]).forEach(s => { if (P[s]) set[s] = 1; }));\n  const out = {};\n  Object.keys(set).forEach(id => {\n    const p = P[id], dead = isDead_(p), keep = x => (x && set[x] && x != id) ? x : '';\n    out[id] = { id: id, name: p.name, g: p.g, dead: dead ? '1' : '', b: dead ? (p.b || '') : String(p.b || '').slice(0, 4), d: p.d || '', chi: p.chi || '', fid: keep(p.fid), mid: keep(p.mid), sid: keep(p.sid), xs: String(p.xs || '').split(',').filter(x => keep(x)).join(',') };\n  });\n  out[sh.root].fid = ''; out[sh.root].mid = '';\n  return { name: P[sh.root].name, depth: sh.depth || 0, people: out };\n}\n\n// ---- Quỹ họ, quỹ khuyến học, thành tích: lưu riêng trong d.fund, không nằm trong d.db nên không lọt vào liên kết chia sẻ nhánh ----\nconst BGK = ['none', 'giay', 'xanh', 'hong', 'la', 'troi', 'hoang', 'cham', 'luoi', 'img'];\nconst FRAMES = ['circle', 'oval', 'ovalh', 'rounded', 'square', 'portrait', 'landscape'];\nconst ACAT = ['hoc-tap', 'thi', 'tot-nghiep', 'nghe-nghiep', 'the-thao', 'van-nghe', 'khac'];\nconst SIDRE = /^[A-Za-z0-9_-]{1,40}$/;\nfunction fund_(d) { d.fund = d.fund || {}; d.fund.tx = d.fund.tx || []; d.fund.ach = d.fund.ach || []; return d.fund; }\nfunction dateOk_(s) { return /^\\d{4}(-\\d\\d(-\\d\\d)?)?$/.test(s || ''); }\nfunction cleanTx_(x, d) {\n  if (!x || !SIDRE.test(String(x.id || ''))) return null;\n  const amt = Math.round(+x.amt);\n  if (!(amt >= 1 && amt <= 1e12) || !/^\\d{4}-\\d\\d-\\d\\d$/.test(x.d || '')) return null;\n  return { id: x.id, f: x.f == 'kh' ? 'kh' : 'ho', t: x.t == 'chi' ? 'chi' : 'thu', d: x.d, pid: x.pid && d.db.people[x.pid] ? x.pid : '', who: String(x.who || '').slice(0, 100), amt: amt, note: String(x.note || '').slice(0, 300), ref: SIDRE.test(String(x.ref || '')) ? x.ref : '' };\n}\nfunction cleanAch_(x, d) {\n  if (!x || !SIDRE.test(String(x.id || '')) || !x.pid || !d.db.people[x.pid] || !dateOk_(x.d) || !String(x.title || '').trim()) return null;\n  return { id: x.id, pid: x.pid, d: x.d, k: ACAT.indexOf(x.k) >= 0 ? x.k : 'khac', title: String(x.title).trim().slice(0, 200), lv: String(Math.min(5, Math.max(0, parseInt(x.lv) || 0))), aw: Math.max(0, Math.min(1e12, Math.round(+x.aw) || 0)), note: String(x.note || '').slice(0, 500) };\n}\nfunction fundSee_(d, role, me, f) { return role == 'quan-tri' || !!(d.vis && d.vis[role] && d.vis[role][f] === true); }\n\nfunction owner_() { return Session.getEffectiveUser().getEmail().toLowerCase(); }\nfunction file_() {\n  const it = DriveApp.getFilesByName(FILE);\n  return it.hasNext() ? it.next() : DriveApp.createFile(FILE, JSON.stringify({ rev: 1, db: { people: {}, updated: 0 }, members: {}, queue: [] }), 'application/json');\n}\nfunction folder_() { const it = DriveApp.getFoldersByName(FOLDER); return it.hasNext() ? it.next() : DriveApp.createFolder(FOLDER); }\nfunction read_() { return JSON.parse(file_().getBlob().getDataAsString()); }\nfunction write_(d) { file_().setContent(JSON.stringify(d)); }\nfunction out_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }\n\n// Xác thực mã đăng nhập Google (ID token) do trình duyệt gửi lên\nfunction who_(t) {\n  if (!t) return null;\n  const r = UrlFetchApp.fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(t), { muteHttpExceptions: true });\n  if (r.getResponseCode() != 200) return null;\n  const j = JSON.parse(r.getContentText());\n  return j.aud == CLIENT_ID && String(j.email_verified) == 'true' ? String(j.email).toLowerCase() : null;\n}\n\nfunction doGet() { return out_({ ok: true, msg: 'Gia pha server' }); }\n\nfunction doPost(e) {\n  let q;\n  try { q = JSON.parse(e.postData.contents); } catch (x) { return out_({ err: 'Dữ liệu gửi lên không hợp lệ' }); }\n  if (q && q.a == 'ping') return out_({ ok: true, cid: CLIENT_ID, ver: 7 }); // trình cài đặt dùng để kiểm tra kết nối và Client ID\n  if (q && q.a == 'shared') return out_(shared_(q));\n  const me = who_(q.t);\n  if (!me) return out_({ err: 'auth' });\n  const lock = LockService.getScriptLock();\n  let got = false;\n  try { lock.waitLock(20000); got = true; return out_(run_(q, me)); }\n  catch (x) { return out_({ err: got ? String(x) : 'Máy chủ đang bận, hãy thử lại sau ít giây' }); }\n  finally { if (got) lock.releaseLock(); }\n}\n\nfunction spouses_(p) { return [p.sid].concat(String(p.xs || '').split(',')).map(i => String(i || '').trim()).filter((i, k, a) => i && a.indexOf(i) == k); }\nfunction apply_(db, x) {\n  const P = db.people;\n  if (x.op == 'del') {\n    delete P[x.pid];\n    for (const k in P) { for (const f of ['fid', 'mid', 'sid']) if (P[k][f] == x.pid) P[k][f] = ''; if (P[k].xs) P[k].xs = P[k].xs.split(',').filter(i => i && i != x.pid).join(','); }\n  } else {\n    P[x.pid] = Object.assign({}, P[x.pid] || {}, x.person, { id: x.pid }); // giữ nguyên ảnh và album đã có\n    ['fid', 'mid', 'sid'].forEach(f => { const r = P[x.pid][f]; if (r && (r == x.pid || !P[r])) P[x.pid][f] = ''; }); // người được trỏ tới có thể đã bị xoá từ lúc gửi đề xuất\n    const mine = spouses_(P[x.pid]).filter(i => P[i]);\n    P[x.pid].xs = (P[x.pid].xs || '').split(',').filter(i => i && P[i] && i != x.pid).join(',');\n    for (const k in P) { // người này là bản gốc: bỏ liên kết cũ không còn, thêm liên kết hai chiều mới\n      if (k == x.pid) continue;\n      const q = P[k], has = spouses_(q).indexOf(x.pid) >= 0;\n      if (has && mine.indexOf(k) < 0) { if (q.sid == x.pid) q.sid = ''; q.xs = (q.xs || '').split(',').filter(i => i && i != x.pid).join(','); }\n      if (!has && mine.indexOf(k) >= 0) { if (!q.sid) q.sid = x.pid; else q.xs = (q.xs ? q.xs + ',' : '') + x.pid; }\n    }\n  }\n  db.updated = Date.now();\n}\n\nfunction run_(q, me) {\n  const d = read_(), role = me == owner_() ? 'quan-tri' : d.members[me];\n  d.log = d.log || [];\n  if (!role) return { err: 'denied' };\n  const admin = role == 'quan-tri', A = q.a;\n  const contact = admin || !!(d.contact && d.contact[me]);\n\n  if (A == 'load') return { role: role, me: me, rev: d.rev, db: contact ? d.db : strip_(d.db), queue: admin ? d.queue : d.queue.filter(x => x.by == me), members: admin ? d.members : undefined, contact: admin ? (d.contact || {}) : undefined, vis: d.vis || {}, frame: d.frame || 'circle', bg: d.bg || {}, defaults: admin ? (d.defaults || { role: 'de-xuat', contact: false, export: false }) : undefined, notify: admin ? nt_(d) : undefined, remind: admin ? rm_(d) : undefined, shares: admin ? shareList_(d) : undefined, remindMe: !(d.remindOff && d.remindOff[me]), owner: me == owner_(), exports: admin ? (d.exports || {}) : undefined, perm: { propose: role != 'xem', contact: contact, export: admin || !!(d.exports && d.exports[me]) } };\n\n  if (A == 'getImg') {\n    const it = folder_().getFilesByName(q.id + '.jpg');\n    return it.hasNext() ? { data: Utilities.base64Encode(it.next().getBlob().getBytes()) } : { err: 'Không thấy ảnh' };\n  }\n\n  if (A == 'getFile') {\n    if (!ID_RE.test(String(q.id || ''))) return { err: 'Tệp không hợp lệ' };\n    const it = fileFolder_().getFilesByName(String(q.id));\n    if (!it.hasNext()) return { err: 'Không thấy tệp' };\n    const b = it.next().getBlob();\n    return { data: Utilities.base64Encode(b.getBytes()), mime: b.getContentType() };\n  }\n\n  if (A == 'propose') {\n    if (role != 'de-xuat' && !admin) return { err: 'denied' };\n    if (['add', 'edit', 'del'].indexOf(q.op) < 0 || !q.pid || String(q.pid).length > 64 || (q.op == 'add' && !PID_RE.test(String(q.pid)))) return { err: 'Đề xuất không hợp lệ' };\n    if (!admin && d.queue.filter(x => x.by == me && x.status == 'cho').length >= MAX_PENDING) return { err: 'Bạn đang có quá nhiều đề xuất chờ duyệt (tối đa ' + MAX_PENDING + '). Hãy đợi quản trị viên xử lý bớt.' };\n    if (q.op == 'add' && d.db.people[q.pid]) return { err: 'Mã người đã tồn tại' };\n    if (q.op != 'add' && !d.db.people[q.pid]) return { err: 'Người này không còn trong gia phả' };\n    const person = q.op == 'del' ? null : clean_(q.person || {}, d.db, q.pid);\n    if (!admin && person && person.ph && d.queue.filter(x => x.by == me && x.status == 'cho' && x.person && x.person.ph).length >= 5) return { err: 'Bạn đang có 5 đề xuất ảnh chờ duyệt, hãy đợi quản trị viên xử lý bớt.' };\n    if (person) { if (!String(person.name || '').trim()) return { err: 'Thiếu họ tên' }; if (!contact) CONTACT.forEach(k => delete person[k]); }\n    d.queue.push({ id: Utilities.getUuid().slice(0, 8), op: q.op, pid: q.pid, person: person, name: String(q.name || (person && person.name) || '').slice(0, 100), by: me, at: Date.now(), status: 'cho', note: String(q.note || '').slice(0, 300) });\n    d.queue = d.queue.slice(-300);\n    log_(d, [{ at: Date.now(), by: me, act: 'dexuat', op: q.op, n: q.name || (person && person.name) || '' }]);\n    write_(d);\n    const n = nt_(d);\n    if (n.admin && !admin) {\n      const old = d.db.people[q.pid], f = q.op == 'edit' && old && person ? changed_(old, person).filter(k => person[k] !== undefined).map(k => LBL[k] || k) : [];\n      mail_(owner_(), 'Gia phả: đề xuất mới từ ' + me,\n        me + ' vừa gửi đề xuất ' + OPV[q.op] + ': \"' + (q.name || (person && person.name) || '') + '\".' + (f.length ? '\\nTrường thay đổi: ' + f.join(', ') : '') + (q.note ? '\\nGhi chú: ' + String(q.note).slice(0, 300) : '') + '\\n\\nHãy vào tab Duyệt để kiểm tra và xác nhận.' + link_(n));\n    }\n    return { queue: d.queue.filter(x => x.by == me) };\n  }\n\n  if (A == 'cancel') {\n    const x = d.queue.filter(z => z.id == q.id && z.by == me && z.status == 'cho')[0];\n    if (!x) return { err: 'Đề xuất không còn chờ duyệt' };\n    x.status = 'thuhoi';\n    log_(d, [{ at: Date.now(), by: me, act: 'thuhoi', op: x.op, n: x.name || (x.person && x.person.name) || '' }]);\n    write_(d);\n    return { queue: d.queue.filter(z => z.by == me) };\n  }\n\n  if (A == 'remindme') {\n    d.remindOff = d.remindOff || {};\n    if (q.off) d.remindOff[me] = true; else delete d.remindOff[me];\n    write_(d);\n    return { remindMe: !d.remindOff[me] };\n  }\n\n  if (A == 'fundLoad') {\n    const fd = fund_(d), sf = fundSee_(d, role, me, 'fund'), sa = fundSee_(d, role, me, 'ach');\n    if (!sf && !sa) return { err: 'denied' };\n    return { tx: sf ? fd.tx : [], ach: sa ? fd.ach : [] };\n  }\n\n  if (!admin) return { err: 'denied' };\n\n  if (A == 'fundOp') {\n    const fd = fund_(d), ops = Array.isArray(q.ops) ? q.ops.slice(0, 500) : [];\n    let nTx = 0, nAch = 0;\n    for (const op of ops) {\n      if (op.o == 'set') {\n        const f = op.f || {};\n        fd.tx = (f.tx || []).slice(0, 20000).map(x => cleanTx_(x, d)).filter(Boolean);\n        fd.ach = (f.ach || []).slice(0, 5000).map(x => cleanAch_(x, d)).filter(Boolean);\n        nTx += fd.tx.length; nAch += fd.ach.length;\n      } else if (op.k == 'tx' || op.k == 'ach') {\n        const L = op.k == 'tx' ? fd.tx : fd.ach;\n        if (op.o == 'del') {\n          const id = String(op.i || '');\n          const had = L.length; fd[op.k] = L.filter(z => z.id != id);\n          if (op.k == 'ach') fd.tx = fd.tx.filter(z => z.ref != id);\n          if (had != fd[op.k].length) { if (op.k == 'tx') nTx++; else nAch++; }\n        } else if (op.o == 'put') {\n          const it = op.k == 'tx' ? cleanTx_(op.i, d) : cleanAch_(op.i, d);\n          if (!it) return { err: 'Dữ liệu quỹ không hợp lệ (kiểm tra số tiền, ngày, người)' };\n          const j = L.findIndex(z => z.id == it.id);\n          if (j >= 0) L[j] = it; else if (L.length < (op.k == 'tx' ? 20000 : 5000)) L.push(it);\n          if (op.k == 'tx') nTx++; else nAch++;\n        }\n      }\n    }\n    if (nTx || nAch) {\n      backup_(d);\n      log_(d, [{ at: Date.now(), by: me, act: nTx && nAch ? 'quy' : nTx ? 'quy' : 'tl', n: (nTx ? nTx + ' khoản thu chi' : '') + (nTx && nAch ? ', ' : '') + (nAch ? nAch + ' thành tích' : '') }]);\n      write_(d);\n    }\n    return { tx: fd.tx, ach: fd.ach };\n  }\n\n  if (A == 'bg') { // hình nền phả đồ (t) và các trang khác (p)\n    const b = q.bg || {}, o = {};\n    ['t', 'p'].forEach(w => {\n      const i = b[w + 'i'];\n      o[w] = BGK.indexOf(b[w]) >= 0 ? b[w] : 'none';\n      o[w + 'i'] = (typeof i == 'string' && i.length <= 80000 && /^data:image\\/jpeg;base64,[A-Za-z0-9+\\/=]+$/.test(i)) ? i : '';\n      o[w + 'o'] = Math.max(0, Math.min(90, Math.round(+b[w + 'o'] || 0)));\n      if (o[w] == 'img' && !o[w + 'i']) o[w] = 'none';\n    });\n    d.bg = o; write_(d); return { bg: o };\n  }\n  if (A == 'frame') { d.frame = FRAMES.indexOf(q.frame) >= 0 ? q.frame : 'circle'; write_(d); return { frame: d.frame }; } // khung ảnh mặc định cho mọi người\n\n  if (A == 'log') {\n    if (q.id) { const nm = String(q.name || ''); return { log: d.log.filter(x => x.id == q.id || (!x.id && nm && x.n == nm)).slice(-100) }; } // lịch sử của một người\n    return { log: d.log.slice(-300) };\n  }\n  if (A == 'notify') {\n    const u = String(q.url || '').trim();\n    d.notify = { admin: !!q.admin, member: !!q.member, url: /^https:\\/\\/[^\\s<>\"']+$/.test(u) ? u.slice(0, 300) : '' };\n    write_(d);\n    return { notify: d.notify };\n  }\n\n  if (A == 'remind') {\n    d.remind = { on: !!q.on, lead: [0, 1, 3, 7].indexOf(+q.lead) >= 0 ? +q.lead : 3, who: q.who == 'all' ? 'all' : 'admin' };\n    write_(d);\n    let trig = 'skip';\n    if (d.remind.on) { try { ensureTrigger_(); trig = 'ok'; } catch (x) { trig = String(x).slice(0, 200); } } // tự tạo lịch chạy hằng ngày, không cần mở Apps Script\n    return { remind: d.remind, trigger: trig };\n  }\n  if (A == 'putFile') {\n    if (!ID_RE.test(String(q.id || '')) || FILE_TYPES.indexOf(q.mime) < 0) return { err: 'Định dạng tệp chưa được hỗ trợ' };\n    const data = String(q.data || '');\n    if (!data || data.length * 3 / 4 > MAX_FILE) return { err: 'Tệp quá lớn (tối đa 8 MB)' };\n    const f = fileFolder_(), it = f.getFilesByName(String(q.id));\n    while (it.hasNext()) it.next().setTrashed(true);\n    f.createFile(Utilities.newBlob(Utilities.base64Decode(data), q.mime, String(q.id)));\n    return { ok: 1 };\n  }\n  if (A == 'delFile') {\n    if (!ID_RE.test(String(q.id || ''))) return { err: 'Tệp không hợp lệ' };\n    const it = fileFolder_().getFilesByName(String(q.id));\n    while (it.hasNext()) it.next().setTrashed(true);\n    return { ok: 1 };\n  }\n  if (A == 'shareNew') {\n    const root = String(q.root || ''), P = d.db.people;\n    if (!P[root]) return { err: 'Không thấy người gốc' };\n    d.shares = d.shares || {};\n    if (Object.keys(d.shares).length >= 20) return { err: 'Đã có 20 liên kết, hãy thu hồi bớt trước khi tạo thêm' };\n    const depth = Math.max(0, Math.min(8, parseInt(q.depth) || 0)), tk = (Utilities.getUuid() + Utilities.getUuid()).replace(/[^A-Za-z0-9]/g, '').slice(0, 40);\n    d.shares[tk] = { root: root, depth: depth, name: P[root].name, at: Date.now(), by: me };\n    log_(d, [{ at: Date.now(), by: me, act: 'nhieu', n: 'Tạo liên kết chia sẻ nhánh ' + P[root].name }]);\n    write_(d);\n    return { shares: shareList_(d), token: tk };\n  }\n  if (A == 'shareDel') {\n    if (d.shares && d.shares[String(q.token)]) { const nm = d.shares[String(q.token)].name; delete d.shares[String(q.token)]; log_(d, [{ at: Date.now(), by: me, act: 'nhieu', n: 'Thu hồi liên kết chia sẻ nhánh ' + nm }]); write_(d); }\n    return { shares: shareList_(d) };\n  }\n  if (A == 'bklist') return { list: bkList_() };\n  if (A == 'bknow') { backup_(d, 'thucong'); write_(d); return { list: bkList_() }; }\n  if (A == 'bkrestore') {\n    if (me != owner_()) return { err: 'Chỉ tài khoản chủ mới được khôi phục bản sao lưu' };\n    let bk;\n    try { bk = JSON.parse(DriveApp.getFileById(String(q.id)).getBlob().getDataAsString()); } catch (e) { return { err: 'Không đọc được bản sao lưu' }; }\n    if (!bk || !bk.db || !bk.db.people) return { err: 'Bản sao lưu không hợp lệ' };\n    backup_(d, 'truoc-khoi-phuc');\n    d.db = bk.db; d.db.updated = Date.now(); d.rev++;\n    log_(d, [{ at: Date.now(), by: me, act: 'nhieu', n: 'Khôi phục bản sao lưu (' + Object.keys(bk.db.people).length + ' người)' }]);\n    write_(d);\n    return { rev: d.rev, db: d.db, list: bkList_() };\n  }\n  if (A == 'settings') {\n    const F = ['tree', 'ev', 'cal', 'ho', 'kin', 'album', 'stat', 'doc'], nv = { xem: {}, 'de-xuat': {} }, qv = q.vis || {}, df = q.defaults || {};\n    ['xem', 'de-xuat'].forEach(r => {\n      F.forEach(f => { if (qv[r] && qv[r][f] === false) nv[r][f] = false; });\n      ['fund', 'ach'].forEach(f => { if (qv[r] && qv[r][f] === true) nv[r][f] = true; }); // quỹ và thành tích mặc định ẩn với thành viên, chỉ hiện khi quản trị viên bật\n    });\n    d.vis = nv;\n    d.defaults = { role: df.role == 'xem' ? 'xem' : 'de-xuat', contact: !!df.contact, export: !!df.export };\n    write_(d);\n    return { vis: d.vis, defaults: d.defaults };\n  }\n\n  if (A == 'save') {\n    if (q.rev != d.rev) return { err: 'conflict' };\n    backup_(d);\n    const df = diff_(d.db, q.db), t = Date.now();\n    log_(d, df.length > 40 ? [{ at: t, by: me, act: 'nhieu', n: df.length + ' mục thay đổi' }] : df.map(x => Object.assign({ at: t, by: me }, x)));\n    d.db = q.db; d.rev++; write_(d);\n    return { rev: d.rev };\n  }\n  if (A == 'review') {\n    const x = d.queue.filter(z => z.id == q.id && z.status == 'cho')[0];\n    if (!x) return { err: 'Đề xuất không còn chờ duyệt' };\n    const f = x.op == 'edit' && x.person && d.db.people[x.pid] ? changed_(d.db.people[x.pid], x.person).filter(k => x.person[k] !== undefined) : undefined; // chỉ tính các trường đề xuất thực sự gửi lên\n    const pre = d.db.people[x.pid], oldv = q.ok && pre && f ? oldVals_(pre, f) : undefined, psnap = q.ok && pre && x.op == 'del' ? snap_(pre) : undefined;\n    if (q.ok) {\n      if (x.op == 'edit' && !d.db.people[x.pid]) return { err: 'Người này đã bị xoá khỏi gia phả' };\n      if (x.op == 'add' && d.db.people[x.pid]) return { err: 'Mã người đã tồn tại, hãy từ chối đề xuất này' };\n      backup_(d); apply_(d.db, x); d.rev++;\n    }\n    x.status = q.ok ? 'duyet' : 'tuchoi';\n    if (x.person && x.person.ph) delete x.person.ph; // đã xử lý xong thì bỏ ảnh khỏi hàng đợi cho nhẹ dữ liệu\n    if (!q.ok) x.why = String(q.why || '').slice(0, 300);\n    const nn = nt_(d);\n    if (nn.member && x.by != owner_()) mail_(x.by, 'Gia phả: đề xuất của bạn đã ' + (q.ok ? 'được duyệt' : 'bị từ chối'),\n      'Đề xuất ' + OPV[x.op] + ' \"' + (x.name || (x.person && x.person.name) || '') + '\" đã ' + (q.ok ? 'được quản trị viên duyệt và áp dụng.' : 'bị từ chối.') + (!q.ok && x.why ? '\\nLý do: ' + x.why : '') + link_(nn));\n    log_(d, [{ at: Date.now(), by: me, act: q.ok ? 'duyet' : 'tuchoi', from: x.by, op: x.op, n: x.name || (x.person && x.person.name) || '', f: f, id: x.pid, old: oldv, p: psnap }]);\n    write_(d);\n    return { rev: d.rev, db: d.db, queue: d.queue };\n  }\n  if (A == 'member') { // thay đổi MỘT thành viên, không ghi đè cả danh sách (tránh mất dữ liệu khi có hai quản trị viên)\n    const e = String(q.email || '').toLowerCase().trim();\n    if (!/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(e) || e == owner_()) return { err: 'Email không hợp lệ hoặc là tài khoản chủ' };\n    d.members = d.members || {}; d.contact = d.contact || {}; d.exports = d.exports || {};\n    if (me != owner_() && (q.role == 'quan-tri' || d.members[e] == 'quan-tri')) return { err: 'Chỉ tài khoản chủ mới được cấp, đổi hoặc thu hồi quyền quản trị viên' };\n    const t = Date.now(), ent = [];\n    if (q.del) {\n      if (d.members[e]) { delete d.members[e]; delete d.contact[e]; delete d.exports[e]; ent.push({ at: t, by: me, act: 'tv', n: e, f: ['Bỏ khỏi danh sách'] }); }\n    } else {\n      if (q.role !== undefined) {\n        if (['quan-tri', 'de-xuat', 'xem'].indexOf(q.role) < 0) return { err: 'Quyền không hợp lệ' };\n        const old = d.members[e]; d.members[e] = q.role;\n        if (old != q.role) ent.push({ at: t, by: me, act: 'tv', n: e, f: [(old ? 'Đổi quyền: ' : 'Mời, quyền: ') + q.role] });\n        if (q.role == 'quan-tri') { delete d.contact[e]; delete d.exports[e]; }\n      }\n      if (q.contact !== undefined) {\n        if (!d.members[e]) return { err: 'Người này chưa được mời' };\n        const nv = !!q.contact;\n        if (d.members[e] != 'quan-tri' && !!d.contact[e] != nv) { if (nv) d.contact[e] = true; else delete d.contact[e]; ent.push({ at: t, by: me, act: 'tv', n: e, f: [nv ? 'Cho xem thông tin liên hệ' : 'Thu quyền xem liên hệ'] }); }\n      }\n      if (q.export !== undefined) {\n        if (!d.members[e]) return { err: 'Người này chưa được mời' };\n        const ev = !!q.export;\n        if (d.members[e] != 'quan-tri' && !!d.exports[e] != ev) { if (ev) d.exports[e] = true; else delete d.exports[e]; ent.push({ at: t, by: me, act: 'tv', n: e, f: [ev ? 'Cho phép xuất danh sách' : 'Thu quyền xuất danh sách'] }); }\n      }\n    }\n    log_(d, ent); write_(d);\n    return { members: d.members, contact: d.contact, exports: d.exports };\n  }\n  if (A == 'putImg' || A == 'delImg') {\n    const f = folder_(), it = f.getFilesByName(q.id + '.jpg');\n    while (it.hasNext()) it.next().setTrashed(true);\n    if (A == 'putImg') f.createFile(Utilities.newBlob(Utilities.base64Decode(q.data), 'image/jpeg', q.id + '.jpg'));\n    return { ok: 1 };\n  }\n  return { err: 'Yêu cầu không hợp lệ' };\n}\n";/*GS_SRC_END*/
+const WZSTEPS=[['intro','Giới thiệu'],['family','Thông tin dòng họ'],['server','Kết nối máy chủ Google'],['login','Đăng nhập quản trị'],['members','Mời thành viên'],['perm','Phân quyền mặc định'],['remind','Nhắc giỗ, sinh nhật'],['backup','Sao lưu'],['display','Giao diện hiển thị'],['install','Cài lên màn hình chính'],['done','Hoàn tất']];
+const WZSERVER=['server','login','members','perm','remind','backup'];
+let wzKeep=false;
+const WZ=()=>{try{return JSON.parse(localStorage.gpsetup||'{}')}catch(e){return {}}};
+const wzSave=o=>{try{localStorage.gpsetup=JSON.stringify(o)}catch(e){}};
+const wzSet=(k,val)=>{const w=WZ();w.st=w.st||{};w.st[k]=val;wzSave(w)};
+const wzD=k=>(WZ().d||{})[k]||'';
+const isAdm=()=>role=='quan-tri'&&!!idt;
+function wzStatus(id){
+  const s=(WZ().st||{})[id]||'';
+  if(id=='server'&&SRV()&&CID())return 'done';
+  if(id=='login'&&idt&&role&&role!='local')return 'done';
+  if(id=='remind'&&isAdm()&&remind.on)return 'done';
+  if(id=='install'&&window.matchMedia&&matchMedia('(display-mode: standalone)').matches)return 'done';
+  return s}
+const wzCidMsg=c=>{c=String(c||'').trim();if(!c)return '';
+  if(/^[0-9]+-[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$/.test(c))return '<div class="wzm ok">Client ID đúng dạng.</div>';
+  if(/^AKfy/.test(c))return '<div class="wzm er">Đây là mã triển khai của Apps Script (đoạn giữa địa chỉ /exec), không phải Client ID. Client ID tạo trên Google Cloud và kết thúc bằng .apps.googleusercontent.com.</div>';
+  return '<div class="wzm er">Client ID phải có dạng 1234567890-abc….apps.googleusercontent.com.</div>'};
+const wzUrlOk=u=>/^https:\/\/script\.google\.com\/(a\/[^\/]+\/)?macros\/s\/[\w-]+\/exec$/.test(String(u||'').trim());
+const wzGs=()=>{const c=String(($('#wzcid')&&$('#wzcid').value)||wzD('cid')||'DÁN_CLIENT_ID_VÀO_ĐÂY.apps.googleusercontent.com').trim().replace(/['\\\r\n]/g,'');return GS_SRC.replace(/const CLIENT_ID = '[^']*';/,()=>"const CLIENT_ID = '"+c+"';")};
+const wzCopy=(t,ok)=>{(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>msg(ok||'Đã sao chép')).catch(()=>msg('Không sao chép được, hãy dùng nút Tải về'))};
+const wzOpt=(arr,cur)=>arr.map(([k,t])=>`<option value="${k}"${String(k)==String(cur)?' selected':''}>${t}</option>`).join('');
+const wzNeed=(need)=>need=='server'&&!SRV()?'<p class="wzm er">Bước này cần kết nối máy chủ trước. Hãy làm bước “Kết nối máy chủ Google”, hoặc bỏ qua và làm sau trong Cài đặt.</p>':need=='login'&&!isAdm()?'<p class="wzm er">Bước này cần đăng nhập bằng tài khoản quản trị. Bỏ qua và làm sau trong Cài đặt cũng được.</p>':'';
+const WZB={
+  intro:()=>{const m=WZ().mode||'shared';return `<p>Trình cài đặt giúp bạn thiết lập từng bước. <b>Bước nào chưa sẵn sàng, bấm “Bỏ qua, làm sau”</b>, mọi thứ đều làm lại được trong tab <b>Cài đặt</b>.</p>
+  <label class="chk"><input type="radio" name="wzmode" value="local"${m=='local'?' checked':''}> Chỉ dùng trên máy này (không cần tài khoản Google, dữ liệu lưu ngay trên thiết bị)</label>
+  <label class="chk"><input type="radio" name="wzmode" value="shared"${m!='local'?' checked':''}> Dùng chung cả dòng họ (dữ liệu lưu trên Google Drive của quản trị viên, người nhà xem và đề xuất sửa)</label>
+  <small>Chọn chế độ chung thì cần một tài khoản Google làm quản trị viên. Bạn có thể đổi ý sau.</small>`},
+  family:()=>`<p>Tiêu đề này dùng cho phả đồ in khổ lớn.</p>
+  <label>Tiêu đề họ<input id="wzt" value="${esc(localStorage.gptitle!=null?localStorage.gptitle:'')}" placeholder="Ví dụ: Gia phả họ Nguyễn"></label>
+  <label>Dòng phụ (tuỳ chọn)<input id="wzs" value="${esc(localStorage.gpsub||'')}" placeholder="Ví dụ: Chi trưởng, quê Nam Định"></label>`,
+  server:()=>{const cid=wzD('cid')||CID(),url=wzD('url')||SRV();return `<p>Bước này nối app với Google Drive của bạn để nhiều người cùng dùng. Gồm 3 việc.</p>
+  <b>1. Tạo Client ID đăng nhập Google</b>
+  <ol class="wzo"><li>Mở <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a> bằng tài khoản quản trị, tạo dự án mới.</li>
+  <li>APIs &amp; Services, OAuth consent screen: chọn <b>External</b>, điền tên app và email, rồi bấm <b>Publish app</b>.</li>
+  <li>Credentials, Create credentials, OAuth client ID, loại <b>Web application</b>.</li>
+  <li>Ở “Authorized JavaScript origins” thêm: <code>${esc(location.origin)}</code> <a data-a="wzcorg">Sao chép</a></li>
+  <li>Tạo xong, sao chép <b>Client ID</b> dán vào ô dưới.</li></ol>
+  <label>Client ID<input class="wzf" data-k="cid" id="wzcid" value="${esc(cid)}" placeholder="1234567890-abc….apps.googleusercontent.com"></label><div id="wzcidm">${wzCidMsg(cid)}</div>
+  <b>2. Cài mã máy chủ</b>
+  <ol class="wzo"><li>Bấm <b>Sao chép Code.gs</b> (đã điền sẵn Client ID ở trên) hoặc <b>Tải về</b>.</li>
+  <li>Mở <a href="https://script.google.com/" target="_blank" rel="noopener">Google Apps Script</a> bằng cùng tài khoản, tạo dự án mới, xoá mã mẫu, dán mã vào rồi lưu.</li>
+  <li>Bấm <b>Deploy, New deployment</b>, loại <b>Web app</b>: Execute as <b>Me</b>, Who has access <b>Anyone</b>, rồi Deploy và cấp quyền (nếu Google cảnh báo thì chọn Advanced, Go to …).</li>
+  <li>Sao chép <b>URL Web app</b> (kết thúc bằng /exec) dán vào ô dưới.</li></ol>
+  <div class="act" style="margin-top:0"><button data-a="wzcopy">Sao chép Code.gs</button><button data-a="wzdl">Tải Code.gs</button></div>
+  <b>3. Dán địa chỉ máy chủ</b>
+  <label>Địa chỉ web app (kết thúc bằng /exec)<input class="wzf" data-k="url" id="wzurl" value="${esc(url)}" placeholder="https://script.google.com/macros/s/…/exec"></label>
+  <div class="act" style="margin-top:0"><button data-a="wztest">Kiểm tra kết nối</button><button class="pr" data-a="wzsave">Lưu và đăng nhập</button></div><div id="wztm"></div>`},
+  login:()=>isAdm()?`<p class="wzm ok">Đã đăng nhập bằng <b>${esc(me||jwtMail())}</b> (${esc(ROLE[role]||'')}).</p>`
+    :SRV()&&CID()?`<p>Đóng cửa sổ này, bấm <b>Đăng nhập bằng Google</b> ở màn hình chính và chọn đúng tài khoản quản trị. Đăng nhập xong, trình cài đặt tự mở lại ở bước tiếp theo.</p><div class="act"><button class="pr" data-a="wzclose">Đóng và đăng nhập</button></div>`
+    :'<p class="wzm er">Chưa kết nối máy chủ. Hãy làm bước “Kết nối máy chủ Google” trước, hoặc bỏ qua.</p>',
+  members:()=>{if(!isAdm())return wzNeed('login');const mem=Object.entries(members);return `<p>Mời người nhà bằng <b>email Google</b> của họ. Họ chỉ cần mở liên kết mời bên dưới và đăng nhập đúng email đó.</p>
+  <label>Email<input id="wzme" type="email" placeholder="ten@gmail.com"></label>
+  <label>Quyền<select id="wzmr">${wzOpt(Object.entries(ROLE).filter(x=>x[0]!='quan-tri'),defs.role||'de-xuat')}</select></label>
+  <label class="chk"><input type="checkbox" id="wzmc"${defs.contact?' checked':''}> Cho xem thông tin liên hệ và nơi ở</label>
+  <label class="chk"><input type="checkbox" id="wzmx"${defs.export?' checked':''}> Cho phép xuất danh sách</label>
+  <div class="act" style="margin-top:0"><button class="pr" data-a="wzmadd">Mời</button></div>
+  ${mem.length?`<small>Đã mời ${mem.length} người:</small>`+mem.map(([e,r])=>`<div class="wzm">${esc(e)}: ${esc(ROLE[r]||r)}</div>`).join(''):''}
+  <label>Liên kết mời, gửi cho thành viên<input id="wzinv" readonly value="${esc(location.origin+location.pathname+'?s='+encodeURIComponent(SRV())+'&c='+encodeURIComponent(CID()))}"></label>
+  <div class="act" style="margin-top:0"><button data-a="wzcinv">Sao chép liên kết mời</button></div>`},
+  perm:()=>{if(!isAdm())return wzNeed('login');return `<p>Chọn chức năng mà từng mức phân quyền được nhìn thấy, và mặc định cho thành viên mới.</p>
+  <table class="mx"><tr><th>Chức năng</th><th>Chỉ xem</th><th>Thành viên</th></tr>${FEAT.map(([f,t])=>`<tr><td>${t}</td>${['xem','de-xuat'].map(r=>`<td><input type="checkbox" data-wzv="${r}:${f}" aria-label="${t}"${visOn(r,f)?' checked':''}></td>`).join('')}</tr>`).join('')}</table>
+  <label>Mức quyền khi mời<select id="wzdr">${wzOpt([['de-xuat','Thành viên (xem, gửi đề xuất sửa)'],['xem','Chỉ xem']],defs.role)}</select></label>
+  <label class="chk"><input type="checkbox" id="wzdc"${defs.contact?' checked':''}> Mặc định cho xem thông tin liên hệ</label>
+  <label class="chk"><input type="checkbox" id="wzde"${defs.export?' checked':''}> Mặc định cho phép xuất danh sách</label>
+  <div class="act" style="margin-top:0"><button class="pr" data-a="wzpsave">Lưu phân quyền</button></div><div id="wzpm"></div>`},
+  remind:()=>{if(!isAdm())return wzNeed('login');return `<p>Máy chủ tự gửi email nhắc giỗ và sinh nhật lúc 7 giờ sáng mỗi ngày. Email chỉ có tên người và ngày, không có thông tin liên hệ.</p>
+  <label class="chk"><input type="checkbox" id="wzron"${remind.on?' checked':''}> Bật nhắc việc tự động</label>
+  <label>Nhắc trước<select id="wzrl">${wzOpt([[0,'Chỉ nhắc đúng ngày'],[1,'Đúng ngày và trước 1 ngày'],[3,'Đúng ngày và trước 3 ngày'],[7,'Đúng ngày và trước 7 ngày']],remind.lead)}</select></label>
+  <label>Gửi cho<select id="wzrw">${wzOpt([['admin','Chỉ quản trị viên'],['all','Tất cả thành viên đã mời']],remind.who)}</select></label>
+  <div class="act" style="margin-top:0"><button class="pr" data-a="wzrsave">Lưu nhắc việc</button></div><div id="wzrm"></div>`},
+  backup:()=>{if(!isAdm())return wzNeed('login');return `<p>Máy chủ tự sao lưu mỗi ngày vào thư mục <b>giapha-saoluu</b> trong Drive của quản trị viên, giữ 30 bản gần nhất. Bạn không cần làm gì thêm. Có thể thử sao lưu ngay:</p>
+  <div class="act" style="margin-top:0"><button data-a="wzbk">Sao lưu ngay</button></div><div id="wzbm"></div><small>Khôi phục bản cũ ở Cài đặt, mục Sao lưu.</small>`},
+  display:()=>`<p>Các lựa chọn này chỉ áp dụng cho thiết bị đang dùng.</p>
+  <label>Giao diện<select data-wz="gpthm">${wzOpt([['','Theo thiết bị'],['light','Sáng'],['dark','Tối']],localStorage.gpthm||'')}</select></label>
+  <label>Cỡ chữ<select data-wz="gpzoom">${wzOpt([['','Chuẩn'],['1.1','Lớn'],['1.25','Rất lớn']],localStorage.gpzoom||'')}</select></label>
+  <label>Màn hình khi mở app<select data-wz="gpstart">${wzOpt([['list','Danh sách'],['tree','Cây'],['ev','Sự kiện'],['cal','Lịch']],localStorage.gpstart||'list')}</select></label>
+  <label>Sự kiện sắp tới hiển thị trong<select data-wz="gpev">${wzOpt(EVD,+localStorage.gpev||30)}</select></label>`,
+  install:()=>`<p>Cài app lên màn hình chính để mở nhanh như một ứng dụng và dùng được cả khi mất mạng.</p>${inst?'<div class="act" style="margin-top:0"><button class="pr" data-a="inst">Cài ứng dụng</button></div>':''}
+  <small>iPhone: bấm Chia sẻ rồi Thêm vào MH chính. Android hoặc Chrome trên máy tính: menu ba chấm rồi Cài đặt ứng dụng.</small>`,
+  done:()=>`<p>Tình trạng cài đặt:</p>`+WZSTEPS.filter(x=>x[0]!='done'&&x[0]!='intro').map(([k,t])=>{const s=wzStatus(k);return `<div class="row" style="cursor:default"><div style="flex:1"><b>${s=='done'?'✓':'○'} ${t}</b><small>${s=='done'?'Đã xong':s=='skip'?'Đã bỏ qua, làm sau':'Chưa làm'}</small></div>${s=='done'?'':`<button data-a="wz" data-i="${k}">Làm bước này</button>`}</div>`}).join('')+'<small>Bước nào chưa xong, bạn làm sau trong tab Cài đặt, mục Trình cài đặt.</small>'
+};
+function wzShow(id){
+  const w=WZ();id=WZSTEPS.some(x=>x[0]==id)?id:(WZSTEPS.some(x=>x[0]==w.step)?w.step:'intro');w.step=id;w.act=true;w.seen=true;wzSave(w);
+  const i=WZSTEPS.findIndex(x=>x[0]==id),n=WZSTEPS.length,last=i==n-1;
+  show(`<div class="wz"><div class="wzp">${WZSTEPS.map((x,k)=>`<i class="${k<i?'d':k==i?'c':''}"></i>`).join('')}</div><small>Bước ${i+1}/${n}</small><h2 style="margin-top:2px">${WZSTEPS[i][1]}</h2>${WZB[id]()}
+  <div class="act wzn"><button data-a="wzprev"${i?'':' hidden'}>‹ Quay lại</button>${last?'':'<button data-a="wzskip">Bỏ qua, làm sau</button>'}<button class="pr" data-a="wznext">${last?'Hoàn tất':'Tiếp ›'}</button></div>
+  <small><a data-a="wzlater">Đóng trình cài đặt, làm sau trong Cài đặt</a></small></div>`)}
+function wzMove(d){const w=WZ(),i=WZSTEPS.findIndex(x=>x[0]==w.step)+d;if(i<0)return;if(i>=WZSTEPS.length)return wzFinish();wzShow(WZSTEPS[i][0])}
+function wzFinish(){const w=WZ();w.act=false;w.fin=true;wzSave(w);wzKeep=false;if($('#dg').open)$('#dg').close();render();msg('Đã đóng trình cài đặt. Phần chưa làm có trong Cài đặt.')}
+function wzLater(){const w=WZ();w.act=false;wzSave(w);wzKeep=false;if($('#dg').open)$('#dg').close();render()}
+function wzNext(){
+  const w=WZ(),id=w.step;
+  if(id=='intro'){const m=($('input[name=wzmode]:checked')||{}).value||'shared';const w2=WZ();w2.mode=m;w2.st=w2.st||{};if(m=='local')WZSERVER.forEach(k=>{w2.st[k]=w2.st[k]||'skip'});wzSave(w2);wzSet('intro','done');return wzShow(m=='local'?'family':'family')}
+  if(id=='family'){const t=$('#wzt').value.trim();localStorage.gptitle=t;localStorage.gpsub=$('#wzs').value.trim();wzSet('family','done');if(WZ().mode=='local')return wzShow('display')}
+  if(id=='display'||id=='install')wzSet(id,'done');
+  wzMove(1)}
+function wzSkip(){const id=WZ().step;if(wzStatus(id)!='done')wzSet(id,'skip');wzMove(1)}
+async function wzTest(){
+  const url=$('#wzurl').value.trim(),cid=$('#wzcid').value.trim(),out=$('#wztm'),bad=m=>out.innerHTML=`<div class="wzm er">${m}</div>`;
+  if(!wzUrlOk(url))return bad('Địa chỉ phải có dạng https://script.google.com/macros/s/…/exec. Hãy sao chép “URL Web app” sau khi Deploy.');
+  out.innerHTML='<div class="wzm">Đang kiểm tra…</div>';
+  try{const r=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({a:'ping'})}),j=await r.json();
+    if(!(j.ok||j.err=='auth'))return bad('Máy chủ phản hồi lạ: '+esc(JSON.stringify(j).slice(0,120)));
+    if(j.cid===undefined)return out.innerHTML='<div class="wzm ok">Máy chủ hoạt động (bản mã cũ, chưa kiểm tra được Client ID).</div>';
+    if(/DÁN_CLIENT_ID/.test(j.cid))return bad('Máy chủ hoạt động nhưng mã Code.gs chưa điền Client ID. Dán lại Code.gs đã điền sẵn, rồi Deploy, Manage deployments, biểu tượng bút, Version: New version.');
+    if(cid&&j.cid!==cid)return bad('Client ID trong Code.gs khác với Client ID bạn nhập. Hãy sửa dòng 9 của Code.gs cho khớp rồi tạo “New version”, hoặc nhập lại ô Client ID.');
+    out.innerHTML='<div class="wzm ok">Máy chủ hoạt động'+(cid?' và Client ID khớp.':'.')+'</div>'
+  }catch(e){bad('Không kết nối được. Kiểm tra địa chỉ /exec và mục Who has access phải là Anyone, rồi Deploy lại.')}}
+function wzSaveSrv(){
+  const url=$('#wzurl').value.trim(),cid=$('#wzcid').value.trim(),out=$('#wztm');
+  if(!/^[0-9]+-[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$/.test(cid))return out.innerHTML='<div class="wzm er">Client ID chưa đúng.</div>'+wzCidMsg(cid);
+  if(!wzUrlOk(url))return out.innerHTML='<div class="wzm er">Địa chỉ web app chưa đúng, phải kết thúc bằng /exec.</div>';
+  const w=WZ();w.st=w.st||{};w.st.server='done';w.step='login';w.act=true;w.seen=true;wzSave(w);
+  localStorage.gpurl=url;localStorage.gpcid=cid;location.reload()}
+function wzList(){
+  const w=WZ(),fin=WZSTEPS.filter(x=>x[0]!='done'&&x[0]!='intro').every(x=>wzStatus(x[0])=='done');
+  return `<h2>Trình cài đặt</h2><small style="margin-bottom:8px">${fin?'Tất cả các bước đã xong.':'Bước nào chưa sẵn sàng có thể làm sau, bấm “Làm” hoặc “Làm lại” để mở đúng bước đó.'}</small>
+  ${WZSTEPS.filter(x=>x[0]!='done'&&x[0]!='intro').map(([k,t])=>{const s=wzStatus(k);return `<div class="row" style="cursor:default"><div style="flex:1"><b>${s=='done'?'✓':'○'} ${t}</b><small>${s=='done'?'Đã xong':s=='skip'?'Đã bỏ qua':'Chưa làm'}</small></div><button data-a="wz" data-i="${k}">${s=='done'?'Làm lại':'Làm'}</button></div>`}).join('')}
+  <div class="act"><button class="pr" data-a="wz" data-i="intro">Mở trình cài đặt từ đầu</button></div>`}
+function wzAuto(){const w=WZ();if(!w.seen&&role=='local'&&!Object.keys(P()).length)wzShow('intro')}
+function wzResume(){if(isAdm()&&WZ().act)wzShow()}
 
 /* ---------- Phả đồ khổ lớn: khung, tiêu đề họ, một tờ lớn hoặc tách nhiều tờ để ghép ---------- */
 const PAPER={A4:[210,297],A3:[297,420],A2:[420,594],A1:[594,841],A0:[841,1189]},MMPX=96/25.4,MAXTILE=64;
@@ -687,10 +842,13 @@ function detail(id){
   ${rel('Cha',[P()[p.fid]].filter(Boolean))}${rel('Mẹ',[P()[p.mid]].filter(Boolean))}${rel('Vợ/chồng',spo(p))}${rel('Con',kids(id).sort(byBirth))}${rel('Anh chị em',sib)}
   ${p.src||p.cf?`<p><small>Nguồn thông tin</small>${esc(p.src||'Chưa ghi nguồn')}${p.cf?` <span class="tag ${p.cf=='nv'?'gio':''}">${p.cf=='nv'?'Nghi vấn':'Chưa kiểm chứng'}</span>`:''}</p>`:''}${p.note?`<p style="white-space:pre-wrap">${esc(p.note)}</p>`:''}
   ${can('doc')&&p.fl&&p.fl.length?`<h2>Tài liệu (${p.fl.length})</h2>${p.fl.map(f=>`<div class="row" data-a="fv" data-i="${p.id}:${f.id}"><div><b>${esc(f.name)}</b> <span class="tag">${FTN(f.type)}</span><small>${Math.max(1,Math.round((+f.size||0)/1024))} KB</small></div></div>`).join('')}`:''}${can('stat')&&tlOf(p).length>1?`<details class="plc"><summary><b>Dòng thời gian</b></summary>${tlOf(p).map(([d,t])=>`<p><small>${esc(vn(d=='9999'?'':d)||'Chưa rõ ngày')}</small>${t}</p>`).join('')}</details>`:''}${can('album')&&p.al&&p.al.length?`<h2>Album (${p.al.length})</h2><div class="alb">${p.al.map(a=>`<img src="${esc(a.t)}" alt="${esc(a.cap)}" title="${esc(a.cap)}" data-a="ph" data-i="${p.id}:${a.id}">`).join('')}</div>`:''}
-  <div class="act"><button class="pr" data-a="edit" data-i="${id}">${role=='de-xuat'?'Đề xuất sửa':'Sửa'}</button><label class="btn pho" style="margin:0">Thêm ảnh<input id="addph" type="file" accept="image/*" multiple hidden data-pid="${id}"></label><label class="btn pho" style="margin:0">Thêm tài liệu<input id="adddoc" type="file" accept=".pdf,image/*,audio/*,video/mp4,.txt" multiple hidden data-pid="${id}"></label><button data-a="child" data-i="${id}">${role=='de-xuat'?'Đề xuất thêm con':'Thêm con'}</button><button data-a="spouse" data-i="${id}">${role=='de-xuat'?'Đề xuất thêm vợ/chồng':'Thêm vợ/chồng'}</button>${can('kin')?`<button data-a="xh" data-i="${id}">Xưng hô</button>`:''}${can('ho')?`<button data-a="ho" data-i="${id}">Hộ gia đình</button>`:''}${can('tree')?`<button data-a="root" data-i="${id}">Xem cây từ đây</button>`:''}<button class="dg" data-a="del" data-i="${id}">${role=='de-xuat'?'Đề xuất xoá':'Xoá'}</button><button data-a="close">Đóng</button></div>`);
+  ${fundBits(p)}
+  <div class="act"><button class="pr" data-a="edit" data-i="${id}">${role=='de-xuat'?'Đề xuất sửa':'Sửa'}</button>${canEdit()||role=='de-xuat'?`<label class="btn" style="margin:0">${role=='de-xuat'?'Đề xuất ảnh đại diện':'Đổi ảnh đại diện'}<input id="setph" type="file" accept="image/*" hidden data-pid="${id}"></label>`:''}<button data-a="child" data-i="${id}">${role=='de-xuat'?'Đề xuất thêm con':'Thêm con'}</button><button data-a="spouse" data-i="${id}">${role=='de-xuat'?'Đề xuất thêm vợ/chồng':'Thêm vợ/chồng'}</button><button class="dg" data-a="del" data-i="${id}">${role=='de-xuat'?'Đề xuất xoá':'Xoá'}</button><button data-a="close">Đóng</button></div>
+  <details class="more"><summary>Ảnh, tài liệu, công cụ khác</summary><div class="act">${p.ph&&(canEdit()||role=='de-xuat')?`<button data-a="rcrop" data-i="${id}">${canEdit()?'Cắt lại ảnh, đổi khung':'Đề xuất cắt lại ảnh'}</button>`:''}${canEdit()?`<label class="btn pho" style="margin:0">Thêm ảnh vào album<input id="addph" type="file" accept="image/*" multiple hidden data-pid="${id}"></label><label class="btn pho" style="margin:0">Thêm tài liệu<input id="adddoc" type="file" accept=".pdf,image/*,audio/*,video/mp4,.txt" multiple hidden data-pid="${id}"></label>`:''}${histBtns(id)}${can('kin')?`<button data-a="xh" data-i="${id}">Xưng hô</button>`:''}${can('ho')?`<button data-a="ho" data-i="${id}">Hộ gia đình</button>`:''}${can('tree')?`<button data-a="root" data-i="${id}">Xem cây từ đây</button>`:''}</div></details>`);
 }
 function toggleDead(f){const c=f.elements.dead.checked;f.querySelector('#deadbox').hidden=!c;f.querySelector('#livebox').hidden=c}
 function formDlg(p){
+  formPh=null;formP=p;
   const L=g=>'<option value="">Không rõ</option>'+Object.values(P()).filter(x=>x.id!=p.id&&(!g||x.g==g)).map(x=>`<option value="${x.id}">${esc(x.name)} ${yr(x.b)}</option>`).join('');
   show(`<form data-id="${p.id||''}"><h2>${role=='de-xuat'?(p.id?'Đề xuất sửa thông tin':'Đề xuất thêm người'):(p.id?'Sửa thông tin':'Thêm người')}</h2>
   <label>Họ và tên<input name="name" required></label>
@@ -719,7 +877,8 @@ function formDlg(p){
   <label>Mẹ<select name="mid">${L('f')}</select></label>
   <label>Vợ/chồng (chính)<select name="sid">${L()}</select></label>
   <label>Vợ/chồng khác (nếu có nhiều đời vợ, chồng; chạm hoặc giữ Ctrl để chọn nhiều)<select name="xs" multiple size="3">${Object.values(P()).filter(x=>x.id!=p.id).sort((a,b)=>a.name.localeCompare(b.name,'vi')).map(x=>`<option value="${x.id}">${esc(x.name)} ${yr(x.b)}</option>`).join('')}</select></label>
-  <label class="pho">Ảnh<input name="ph" type="file" accept="image/*"></label>
+  <div class="avrow"><span id="avprev">${av(p)}</span><div style="flex:1"><label>Ảnh đại diện<input name="ph" type="file" accept="image/*"></label>${p.ph?'<button type="button" data-a="recrop">Cắt, chỉnh lại ảnh hiện tại</button>':''}${p.ph?'<label class="chk"><input type="checkbox" name="delph"> Xoá ảnh đại diện hiện tại</label>':''}<small>Sau khi chọn ảnh, bạn cắt và chỉnh trước khi lưu.${role=='de-xuat'?' Quản trị viên sẽ xem và duyệt ảnh trước khi áp dụng.':''}</small></div></div>
+  ${canEdit()?`<label>Khung ảnh của người này<select name="fr">${frOpts(p.fr)}</select></label>`:''}
   <label>Nguồn thông tin<input name="src" placeholder="ví dụ: gia phả chép tay đời 12, lời kể của ông B"></label>
   <label>Độ tin cậy<select name="cf"><option value="">Bình thường</option><option value="kc">Chưa kiểm chứng</option><option value="nv">Nghi vấn, cần kiểm tra thêm</option></select></label>
   <label>Ghi chú, tiểu sử<textarea name="note" rows="4"></textarea></label>
@@ -745,8 +904,11 @@ async function submitForm(f){
   if(!okDate(p.b)||!okDate(p.d))return alert('Ngày không hợp lệ. Hãy nhập dd/mm/yyyy (hoặc mm/yyyy, hoặc chỉ năm).');
   if(pd(p.b)&&pd(p.d)&&jd(...pd(p.d))<jd(...pd(p.b)))return alert('Ngày mất không thể trước ngày sinh.');
   if((p.gd&&(+p.gd<1||+p.gd>30))||(p.gm&&(+p.gm<1||+p.gm>12)))return alert('Ngày giỗ âm lịch không hợp lệ (ngày 1–30, tháng 1–12).');
-  if(role=='de-xuat'){const {ph,al,...q}=p;$('#dg').close();return propose(old.id?'edit':'add',id,q,String(fd.get('pnote')||'').trim())}
-  const file=fd.get('ph');if(file&&file.size)p.ph=await shrink(file);
+  {const oSp=spAll(old),bad=newErrs(candChecks(()=>{P()[id]=p;syncSp(id,oSp)}));if(bad.length&&!confirm('Phát hiện lỗi quan hệ hoặc ngày tháng:\n- '+bad.slice(0,5).map(x=>x.m).join('\n- ')+'\n\nVẫn tiếp tục lưu?'))return}
+  const file=fd.get('ph'),newPh=formPh?formPh.u:(file&&file.size?await shrink(file):null);formPh=null;
+  if(role=='de-xuat'){const {ph,al,fr,...q}=p;if(newPh)q.ph=newPh;else if(fd.get('delph'))q.ph='';$('#dg').close();return propose(old.id?'edit':'add',id,q,String(fd.get('pnote')||'').trim())}
+  if(newPh)p.ph=newPh;else if(fd.get('delph'))p.ph='';
+  if(canEdit())p.fr=FRS[fd.get('fr')]?fd.get('fr'):'';
   const oldSp=spAll(old);P()[id]=p;syncSp(id,oldSp);$('#dg').close();save();
   const w=checks().filter(x=>x.id==id);if(w.length)msg('Cảnh báo: '+w[0].m)
 }
@@ -781,7 +943,7 @@ function lightbox(pid,aid){
   const a=(P()[pid].al||[]).find(x=>x.id==aid);if(!a)return;curA=[pid,aid];
   show(`<img id="big" src="${esc(a.t)}" alt="${esc(a.cap)}" style="width:100%;border-radius:6px;background:#e4e9e7">
   <label>Chú thích<input id="acap" value="${esc(a.cap)}"></label><label>Năm chụp<input id="ayr" value="${esc(a.yr)}" inputmode="numeric"></label>
-  <div class="act"><button class="pr" data-a="asave">Lưu chú thích</button><button data-a="aava">Đặt làm ảnh đại diện</button><button class="dg" data-a="adel">Xoá ảnh</button><button data-a="view" data-i="${pid}">Quay lại</button></div>`);
+  <div class="act">${canEdit()?`<button class="pr" data-a="asave">Lưu chú thích</button><button data-a="aava">Đặt làm ảnh đại diện</button><button class="dg" data-a="adel">Xoá ảnh</button>`:role=='de-xuat'?`<button class="pr" data-a="aavap">Đề xuất làm ảnh đại diện</button>`:''}<button data-a="view" data-i="${pid}">Quay lại</button></div>`);
   getFull(a).then(u=>{const i=$('#big');if(u&&i)i.src=u})}
 function delPhoto(pid,aid){
   if(!canEdit())return;const p=P()[pid],a=p.al.find(x=>x.id==aid);if(!a||!confirm('Xoá ảnh này?'))return;
@@ -834,6 +996,7 @@ function cleanDb(d){const o={people:{},updated:Date.now()};
     for(const f of ['b','d'])if(!okDate(q[f]||''))q[f]='';
     for(const f of ['fid','mid','sid'])if(q[f]&&!SID.test(q[f]))q[f]='';
     if(q.ph&&!okImg(q.ph))q.ph='';
+    if(q.fr&&!FRS[q.fr])q.fr='';
     if(Array.isArray(p.fl))q.fl=p.fl.filter(f=>f&&SID.test(f.id)&&FT.includes(f.type)).slice(0,100).map(f=>({id:f.id,name:String(f.name||'').slice(0,120),type:f.type,size:+f.size||0,sent:f.sent?1:0}));
     if(Array.isArray(p.al))q.al=p.al.filter(a=>a&&SID.test(a.id)&&okImg(a.t)).slice(0,200).map(a=>({id:a.id,t:a.t,cap:String(a.cap||'').slice(0,300),yr:String(a.yr||'').slice(0,10),sent:a.sent?1:0}));
     o.people[k]=q}
@@ -850,19 +1013,23 @@ async function xlsxIn(file){
     rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:'',raw:false,dateNF:'yyyy-mm-dd'})}catch(e){return msg('Không đọc được tệp Excel')}
   const R=rows.map(r=>{const o={};for(const k in r){const f=XF[norm(k).replace(/[^a-z0-9]/g,'')];if(f)o[f]=String(r[k]==null?'':r[k]).trim()}return o}).filter(o=>o.name);
   if(!R.length)return msg('Không thấy dòng nào có cột "Họ và tên"');
+  importRows(R)}
+function importRows(R){
+  if(!canEdit())return msg('Bạn không có quyền nhập dữ liệu');
   const ids=new Set(),byName={};let add=0,upd=0,miss=0;
   R.forEach(o=>{if(!o.id||!SID.test(o.id)||ids.has(o.id))o.id=uid();ids.add(o.id);P()[o.id]?upd++:add++});
   const addName=(n,id)=>{n=norm(n);(byName[n]=byName[n]||[]).push(id)};
   Object.values(P()).forEach(q=>addName(q.name,q.id));R.forEach(o=>{if(!P()[o.id])addName(o.name,o.id)});
   const rel=(id,nm,self)=>{if(id&&id!=self&&(P()[id]||ids.has(id)))return id;
     if(!nm){if(id)miss++;return ''}const l=byName[norm(nm)];if(l&&l.length==1&&l[0]!=self)return l[0];miss++;return ''};
-  if(!confirm(`Nhập ${R.length} dòng: ${add} thêm mới, ${upd} cập nhật. Tiếp tục?`))return;
   const n=x=>{const v=parseInt(x);return v>0?String(v):''};
-  R.forEach(o=>{const old=P()[o.id]||{},kp=k=>o[k]!==undefined?o[k]:(old[k]||''),dd=nd(o.d);
+  const apply=()=>{miss=0;R.forEach(o=>{const old=P()[o.id]||{},kp=k=>o[k]!==undefined?o[k]:(old[k]||''),dd=nd(o.d);
     P()[o.id]={...old,id:o.id,name:o.name,g:/^(nu|f)/.test(norm(o.g||''))?'f':'m',b:nd(o.b),d:dd,dead:dd||(o.dead!==undefined?/^(co|x|1|y|t)/.test(norm(o.dead)):old.dead)?'1':'',bp:kp('bp'),rs:kp('rs'),tel:kp('tel'),mail:kp('mail'),ct:kp('ct'),bur:kp('bur'),job:kp('job'),edu:kp('edu'),wp:kp('wp'),hu:kp('hu'),tu:kp('tu'),th:kp('th'),bd:kp('bd'),src:kp('src'),cf:o.cf!==undefined?(/^nghi/.test(norm(o.cf))?'nv':/^chua/.test(norm(o.cf))?'kc':''):(old.cf||''),gd:n(o.gd),gm:n(o.gm),pl:o.pl||'',note:o.note||'',
       fid:rel(o.fid,o.fn,o.id),mid:rel(o.mid,o.mn,o.id),sid:rel(o.sid,o.sn,o.id),xs:o.xs!==undefined?o.xs.split(/[,;|]/).map(x=>x.trim()).filter(Boolean).map(x=>rel(x,'',o.id)).filter(Boolean).join(','):(old.xs||'')}});
-  normSp();
-  save();msg(`Đã nhập ${R.length} người`+(miss?`, ${miss} quan hệ không xác định được`:''))}
+  normSp()};
+  const bad=newErrs(candChecks(apply));
+  if(!confirm(`Nhập ${R.length} dòng: ${add} thêm mới, ${upd} cập nhật.`+(miss?`\n${miss} quan hệ (cha, mẹ, vợ/chồng) không xác định được sẽ để trống.`:'')+(bad.length?`\n\nSau khi nhập sẽ có ${bad.length} lỗi dữ liệu mới:\n- `+bad.slice(0,6).map(x=>x.m).join('\n- ')+(bad.length>6?'\n…':''):'')+'\n\nTiếp tục?'))return;
+  apply();save();msg(`Đã nhập ${R.length} người`+(miss?`, ${miss} quan hệ không xác định được`:''))}
 
 /* ---------- Actions ---------- */
 const A={
@@ -876,7 +1043,8 @@ const A={
   xout:gx(()=>xlsxOut(xrows(),'giapha.xlsx')),xtpl:tpl,
   ph:i=>{const[a,b]=i.split(':');lightbox(a,b)},
   asave:()=>{const[a,b]=curA,x=P()[a].al.find(z=>z.id==b);x.cap=$('#acap').value.trim();x.yr=$('#ayr').value.trim();save();lightbox(a,b)},
-  aava:()=>{const[a,b]=curA;P()[a].ph=P()[a].al.find(z=>z.id==b).t;save();detail(a)},
+  aavap:()=>{const[a,b]=curA,x=P()[a].al.find(z=>z.id==b);if(!x)return;getFull(x).then(u=>{$('#dg').close();openCrop(u||x.t,{pick:false,done:v=>frDone(a,v)})})},
+  aava:()=>{const[a,b]=curA,x=P()[a].al.find(z=>z.id==b);if(!x)return;getFull(x).then(u=>{$('#dg').close();openCrop(u||x.t,{pick:true,cur:P()[a].fr||'',done:(v,c)=>frDone(a,v,c)})})},
   adel:()=>delPhoto(...curA),
   
   cal:i=>{const[y,m,d]=i.split('-').map(Number);cs={y,m,sel:d};v='cal';$('#dg').close();render();scrollTo(0,0)},
@@ -892,7 +1060,7 @@ const A={
   out:()=>{
     if(SRV()&&localStorage.gpdirty&&!confirm('Còn thay đổi chưa lưu lên máy chủ, đăng xuất sẽ làm mất chúng. Vẫn đăng xuất?'))return;
     idt='';sessionStorage.removeItem('gpt');localStorage.removeItem('gprole');offline=false;if(window.google)google.accounts.id.disableAutoSelect();
-    if(SRV()){localStorage.removeItem('gp');localStorage.removeItem('gpdirty');try{indexedDB.deleteDatabase('giapha')}catch(e){}db={people:{},updated:0};queue=[];members={};contact={};perm={};vmap={};bks=null;me='';deny='';role=''}else role='local';
+    if(SRV()){localStorage.removeItem('gpfundc');localStorage.removeItem('gpvis');localStorage.removeItem('gp');localStorage.removeItem('gpdirty');try{indexedDB.deleteDatabase('giapha')}catch(e){}db={people:{},updated:0};fund={tx:[],ach:[]};fundOk=false;fundErr=false;queue=[];members={};contact={};perm={};vmap={};bks=null;me='';deny='';role=''}else role='local';
     render()},
   ok:i=>review(i,1),no:i=>{const w=prompt('Lý do từ chối (người đề xuất sẽ thấy):','');if(w!==null)review(i,0,w)},
   ntsave:()=>{const n={admin:$('[data-nt=admin]').checked,member:$('[data-nt=member]').checked,url:$('#nurl').value.trim()};api('notify',n).then(r=>{if(r.err)return msg(r.err);notify=r.notify;render();msg('Đã lưu cài đặt thông báo')}).catch(fail)},
@@ -908,21 +1076,429 @@ const A={
   bklist:()=>api('bklist').then(r=>{if(r.err)return msg(r.err);bks=r.list;render()}).catch(fail),
   bkres:i=>{if(!confirm('Khôi phục bản sao lưu này? Toàn bộ dữ liệu hiện tại sẽ được thay bằng bản đã chọn (máy chủ tự sao lưu bản hiện tại trước khi khôi phục).'))return;
     api('bkrestore',{id:i}).then(r=>{if(r.err)return msg(r.err);db=r.db;snap0=JSON.stringify(db);rev=r.rev;bks=r.list;localStorage.gp=JSON.stringify(db);localStorage.removeItem('gpdirty');render();msg('Đã khôi phục')}).catch(fail)},
-  vissave:()=>{const nv={xem:{},'de-xuat':{}};document.querySelectorAll('[data-vis]').forEach(c=>{const[r,f]=c.dataset.vis.split(':');if(!c.checked)nv[r][f]=false});
+  vissave:()=>{const nv={xem:{},'de-xuat':{}};document.querySelectorAll('[data-vis]').forEach(c=>{const[r,f]=c.dataset.vis.split(':');if(FOFF.has(f)){if(c.checked)nv[r][f]=true}else if(!c.checked)nv[r][f]=false});
     api('settings',{vis:nv,defaults:{role:$('#dr').value,contact:$('#dc').checked,export:$('#de').checked}}).then(r=>{if(r.err)return msg(r.err);vmap=r.vis;defs=r.defaults;render();msg('Đã lưu cài đặt phân quyền')}).catch(fail)},
+  wz:i=>wzShow(i),wzprev:()=>wzMove(-1),wznext:wzNext,wzskip:wzSkip,wzlater:wzLater,wzclose:()=>{wzKeep=true;$('#dg').close()},
+  wztest:wzTest,wzsave:wzSaveSrv,wzcopy:()=>{if(!GS_SRC)return msg('Chưa có mã máy chủ trong bản này');wzCopy(wzGs(),'Đã sao chép Code.gs, hãy dán vào Apps Script')},
+  wzdl:()=>{if(!GS_SRC)return msg('Chưa có mã máy chủ trong bản này');dl('Code.gs',wzGs(),'text/plain')},wzcorg:()=>wzCopy(location.origin,'Đã sao chép địa chỉ'),
+  wzcinv:()=>wzCopy($('#wzinv').value,'Đã sao chép liên kết mời'),
+  wzmadd:async()=>{const e=$('#wzme').value.trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return msg('Nhập email hợp lệ');if(e==String(me).toLowerCase())return msg('Đây là tài khoản của bạn, không cần mời');
+    await memOp({email:e,role:$('#wzmr').value,contact:$('#wzmc').checked,export:$('#wzmx').checked});wzSet('members','done');wzShow('members')},
+  wzpsave:()=>{const nv={xem:{},'de-xuat':{}};document.querySelectorAll('[data-wzv]').forEach(c=>{const[r,f]=c.dataset.wzv.split(':');if(FOFF.has(f)){if(c.checked)nv[r][f]=true}else if(!c.checked)nv[r][f]=false});
+    api('settings',{vis:nv,defaults:{role:$('#wzdr').value,contact:$('#wzdc').checked,export:$('#wzde').checked}}).then(r=>{if(r.err)return $('#wzpm').innerHTML='<div class="wzm er">'+esc(r.err)+'</div>';vmap=r.vis;defs=r.defaults;wzSet('perm','done');$('#wzpm').innerHTML='<div class="wzm ok">Đã lưu phân quyền.</div>'}).catch(fail)},
+  wzrsave:()=>api('remind',{on:$('#wzron').checked,lead:$('#wzrl').value,who:$('#wzrw').value}).then(r=>{if(r.err)return $('#wzrm').innerHTML='<div class="wzm er">'+esc(r.err)+'</div>';remind=r.remind;
+    $('#wzrm').innerHTML=!remind.on?'<div class="wzm">Đã tắt nhắc việc.</div>':r.trigger=='ok'?'<div class="wzm ok">Đã bật. Máy chủ sẽ gửi email lúc 7 giờ sáng mỗi ngày.</div>':'<div class="wzm er">Đã lưu cài đặt nhưng chưa tạo được lịch chạy tự động ('+esc(r.trigger||'')+'). Mở dự án Apps Script, chọn hàm setupReminders, bấm Run một lần và cấp quyền.</div>'}).catch(fail),
+  wzbk:()=>api('bknow').then(r=>{if(r.err)return $('#wzbm').innerHTML='<div class="wzm er">'+esc(r.err)+'</div>';bks=r.list;wzSet('backup','done');$('#wzbm').innerHTML='<div class="wzm ok">Đã sao lưu. Hiện có '+r.list.length+' bản.</div>'}).catch(fail),
   reload:()=>flush().catch(()=>{}).then(boot).then(()=>msg('Đã tải lại dữ liệu')),
   cancel:i=>{if(confirm('Thu hồi đề xuất này?'))api('cancel',{id:i}).then(r=>{if(r.queue)queue=r.queue;render()}).catch(fail)},
   memadd:()=>{const e=$('#memail').value.trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return msg('Nhập email hợp lệ');if(e==String(me).toLowerCase())return msg('Đây là tài khoản của bạn, không cần mời');
     memOp({email:e,role:$('#mrole').value,contact:$('#mcon').checked,export:$('#mexp').checked})},
   memdel:i=>{if(!confirm('Bỏ '+i+' khỏi danh sách thành viên? Người này sẽ không xem được gia phả nữa.'))return;memOp({email:i,del:true})},
   cplink:()=>{const u=$('#invl').value;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>msg('Đã sao chép liên kết mời')).catch(()=>{$('#invl').select();msg('Hãy nhấn giữ và sao chép liên kết')})},
-  expjson:gx(()=>dl('giapha.json',JSON.stringify(db))),ged:gx(()=>dl('giapha.ged',ged(),'text/plain')),
+  expjson:gx(()=>dl('giapha.json',JSON.stringify(canEdit()&&fundOk?{...db,fund}:db))),ged:gx(()=>dl('giapha.ged',ged(),'text/plain')),
   prn:gx(()=>{v='tree';render();setTimeout(print,200)})
 };
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(t){e.preventDefault();A[t.dataset.a](t.dataset.i)}});
+/* ---------- Quỹ họ, quỹ khuyến học, thành tích ---------- */
+const FUNDN={ho:'Quỹ họ',kh:'Quỹ khuyến học'};
+const ACATN={'hoc-tap':'Học tập','thi':'Thi cử, tuyển sinh','tot-nghiep':'Tốt nghiệp','nghe-nghiep':'Công tác, nghề nghiệp','the-thao':'Thể thao','van-nghe':'Văn nghệ','khac':'Khác'};
+const LVN=['Gia đình, dòng họ','Trường','Huyện, quận','Tỉnh, thành phố','Quốc gia','Quốc tế'];
+let fund={tx:[],ach:[]},fundOk=false,fundErr=false,fsub='tong',ach_sub='ds',ffq='all',ffy='all',afc='all',afy='all',fundBusy=false;
+const vnd=n=>(Math.round(+n)||0).toLocaleString('vi-VN')+' đ';
+const todayS=()=>{const t=new Date();return t.getFullYear()+'-'+pad(t.getMonth()+1)+'-'+pad(t.getDate())};
+const vnd2=s=>{const x=pd(s);return x?pad(x[0])+'/'+pad(x[1])+'/'+x[2]:(s||'')};
+const dmy=s=>{const m=String(s||'').match(/^(\d{4})(?:-(\d\d)(?:-(\d\d))?)?$/);return m?(m[3]?m[3]+'/':'')+(m[2]?m[2]+'/':'')+m[1]:String(s||'')};
+function parseAmt(s){s=norm(String(s||'')).replace(/\s/g,'');const m=s.match(/^([\d.,]+)(k|nghin|tr|trieu|ty)?$/);if(!m)return 0;
+  const u=m[2],n=u?parseFloat(m[1].replace(',','.')):parseInt(m[1].replace(/[.,]/g,''),10);
+  return Math.round(n*(u=='k'||u=='nghin'?1e3:u=='tr'||u=='trieu'?1e6:u=='ty'?1e9:1))||0}
+const SIDF=/^[A-Za-z0-9_-]{1,40}$/;
+function fcTx(x){if(!x||!SIDF.test(String(x.id||'')))return null;const amt=Math.round(+x.amt);if(!(amt>=1&&amt<=1e12)||!/^\d{4}-\d\d-\d\d$/.test(x.d||''))return null;
+  return {id:x.id,f:x.f=='kh'?'kh':'ho',t:x.t=='chi'?'chi':'thu',d:x.d,pid:x.pid&&P()[x.pid]?x.pid:'',who:String(x.who||'').slice(0,100),amt,note:String(x.note||'').slice(0,300),ref:SIDF.test(String(x.ref||''))?x.ref:''}}
+function fcAch(x){if(!x||!SIDF.test(String(x.id||''))||!x.pid||!P()[x.pid]||!okDate(x.d||'')||!x.d||!String(x.title||'').trim())return null;
+  return {id:x.id,pid:x.pid,d:x.d,k:ACATN[x.k]?x.k:'khac',title:String(x.title).trim().slice(0,200),lv:String(Math.min(5,Math.max(0,parseInt(x.lv)||0))),aw:Math.max(0,Math.min(1e12,Math.round(+x.aw)||0)),note:String(x.note||'').slice(0,500)}}
+function fundLocalLoad(){try{const f=JSON.parse(localStorage.gpfund||'{}');fund={tx:(f.tx||[]).map(fcTx).filter(Boolean),ach:(f.ach||[]).map(fcAch).filter(Boolean)}}catch(e){fund={tx:[],ach:[]}}fundOk=true}
+const fundLocalSave=()=>{try{localStorage.gpfund=JSON.stringify(fund)}catch(e){}};
+async function loadFund(){
+  await 0; // luôn chạy sau khi giao diện hiện tại dựng xong, tránh dựng lồng nhau
+  if(role=='local'){fundLocalLoad();if(v=='fund'||v=='ach')render();return}
+  if(offline){try{const c=JSON.parse(localStorage.gpfundc);fund={tx:c.tx||[],ach:c.ach||[]};fundOk=true}catch(e){fundErr=true}if(v=='fund'||v=='ach')render();return}
+  if(!idt||offline||!SRV()||!(can('fund')||can('ach'))){fundErr=true;return}
+  try{const r=await api('fundLoad');if(r.err){fundErr=true;return}fund={tx:r.tx||[],ach:r.ach||[]};fundOk=true;fundErr=false;try{localStorage.gpfundc=JSON.stringify(fund)}catch(e){}if(v=='fund'||v=='ach')render()}catch(e){fundErr=true}}
+function fundApply(op){
+  if(op.o=='set'){fund={tx:((op.f||{}).tx||[]).map(fcTx).filter(Boolean),ach:((op.f||{}).ach||[]).map(fcAch).filter(Boolean)};return}
+  const L=fund[op.k];if(!L)return;
+  if(op.o=='del'){const id=String(op.i);fund[op.k]=L.filter(z=>z.id!=id);if(op.k=='ach')fund.tx=fund.tx.filter(z=>z.ref!=id);return}
+  const it=(op.k=='tx'?fcTx:fcAch)(op.i);if(!it)return;const j=L.findIndex(z=>z.id==it.id);if(j>=0)L[j]=it;else L.push(it)}
+async function fundOps(ops){
+  if(!canEdit()){msg('Bạn không có quyền sửa quỹ và thành tích');return false}
+  if(role=='local'){ops.forEach(fundApply);fundLocalSave();render();return true}
+  try{let r;for(let i=0;i<ops.length||!i;i+=400){r=await api('fundOp',{ops:ops.slice(i,i+400)});if(r.err){msg(r.err);return false}}fund={tx:r.tx||[],ach:r.ach||[]};fundOk=true;render();return true}
+  catch(e){if(!e||e.err!='auth')fail(e);return false}}
+
+/* Gia đình = hộ: người có vợ/chồng thì tính theo chồng (hoặc người chính của cặp), người chưa có thì tự là một hộ */
+function famHead(id){const p=P()[id];if(!p)return '';const sp=spo(p);if(!sp.length||p.g=='m')return id;const m=sp.find(s=>s.g=='m');return m?m.id:id}
+function famName(h){const p=P()[h];if(!p)return '(đã xoá)';const s=spo(p).filter(x=>x.g!=p.g)[0];return 'Gia đình '+p.name+(s?' và '+s.name:'')}
+const personLbl=(pid,who)=>pid&&P()[pid]?P()[pid].name:pid?'(người đã xoá khỏi gia phả)':(who?who+' (ngoài danh sách)':'Không rõ');
+const fyears=()=>[...new Set([...fund.tx.map(x=>x.d.slice(0,4)),...fund.ach.map(x=>String(x.d).slice(0,4))].filter(Boolean))].sort().reverse();
+const ftx=()=>fund.tx.filter(x=>(ffq=='all'||x.f==ffq)&&(ffy=='all'||x.d.slice(0,4)==ffy));
+const sumT=(a,t)=>a.filter(x=>x.t==t).reduce((s,x)=>s+x.amt,0);
+const balOf=f=>{const a=fund.tx.filter(x=>x.f==f);return sumT(a,'thu')-sumT(a,'chi')};
+function grp(a,keyf,labf){const m=new Map();
+  for(const x of a.filter(z=>z.t=='thu')){const k=keyf(x);let g=m.get(k);if(!g){g={k,label:labf(k,x),tot:0,n:0,last:'',ho:0,kh:0,items:[]};m.set(k,g)}g.tot+=x.amt;g[x.f]+=x.amt;g.n++;g.items.push(x);if(x.d>g.last)g.last=x.d}
+  return [...m.values()].sort((a,b)=>b.tot-a.tot||a.label.localeCompare(b.label,'vi'))}
+const byMem=a=>grp(a,x=>x.pid&&P()[x.pid]?x.pid:'w:'+norm(x.who||'khong ro'),(k,x)=>personLbl(x.pid,x.who));
+const byFam=a=>grp(a,x=>x.pid&&P()[x.pid]?famHead(x.pid):'w:'+norm(x.who||'khong ro'),(k,x)=>x.pid&&P()[x.pid]?famName(k):personLbl('',x.who));
+const optYears=(cur)=>`<option value="all"${cur=='all'?' selected':''}>Mọi năm</option>`+fyears().map(y=>`<option${y==cur?' selected':''}>${y}</option>`).join('');
+const frow=(l,sub,r,attr,cls)=>`<div class="row"${attr?' '+attr:' style="cursor:default"'}><div style="flex:1"><b>${l}</b>${sub?`<small>${sub}</small>`:''}</div><div style="text-align:right;white-space:nowrap" class="${cls||''}">${r}</div></div>`;
+const ftag=f=>`<span class="tag${f=='kh'?' gio':''}">${FUNDN[f]}</span>`;
+
+function fundGuard(){if(fundOk)return '';if(fundErr)return '<p class="empty">Không tải được dữ liệu quỹ. Hãy kiểm tra mạng rồi bấm tải lại trang.</p>';if(!fundBusy){fundBusy=true;loadFund().finally(()=>{fundBusy=false})}return '<p class="empty">Đang tải…</p>'}
+function vFund(){
+  const g=fundGuard();if(g)return g;
+  if(ffy!='all'&&!fyears().includes(ffy))ffy='all';
+  const adm=canEdit(),a=ftx(),subs=[['tong','Tổng quan'],['tx','Thu chi'],['tv','Thành viên'],['gd','Gia đình'],['kh','Khuyến học']];
+  let h=`<div class="act noprint">${subs.map(([k,t])=>`<button data-a="fsub" data-i="${k}" class="${fsub==k?'pr':''}">${t}</button>`).join('')}</div>
+  ${fsub=='kh'?'':`<div class="bar noprint"><select id="ffq" aria-label="Quỹ"><option value="all">Cả hai quỹ</option><option value="ho"${ffq=='ho'?' selected':''}>Quỹ họ</option><option value="kh"${ffq=='kh'?' selected':''}>Quỹ khuyến học</option></select><select id="ffy" aria-label="Năm">${optYears(ffy)}</select></div>`}`;
+  if(adm)h+=`<div class="act noprint"><button class="pr" data-a="fnew" data-i="thu">Thêm khoản thu</button><button data-a="fnew" data-i="chi">Thêm khoản chi</button><button data-a="fbulk">Nhập nhiều khoản thu</button><button data-a="fxls">Xuất Excel</button><button data-a="frep">In báo cáo</button></div>`;
+  else h+=`<div class="act noprint"><button data-a="fxls">Xuất Excel</button><button data-a="frep">In báo cáo</button></div>`;
+  if(fsub=='tong'){
+    h+=['ho','kh'].filter(f=>ffq=='all'||ffq==f).map(f=>{const x=a.filter(z=>z.f==f);return `<div class="row" style="cursor:default;display:block"><b>${FUNDN[f]}</b><small>Số dư hiện tại (mọi năm)</small><div style="font-size:22px;font-weight:700">${vnd(balOf(f))}</div><small>${ffy=='all'?'Tổng cộng':'Năm '+ffy}: thu ${vnd(sumT(x,'thu'))}, chi ${vnd(sumT(x,'chi'))}, ${x.length} khoản</small></div>`}).join('');
+    const ys=fyears().filter(y=>ffy=='all'||y==ffy),base=fund.tx.filter(x=>ffq=='all'||x.f==ffq);
+    if(ys.length)h+=`<h2>Theo năm</h2>`+ys.map(y=>{const z=base.filter(x=>x.d.slice(0,4)==y);return frow(y,`Thu ${vnd(sumT(z,'thu'))}, chi ${vnd(sumT(z,'chi'))}`,vnd(sumT(z,'thu')-sumT(z,'chi')))}).join('');
+    const top=byFam(a).slice(0,5);if(top.length)h+=`<h2>Gia đình đóng góp nhiều nhất</h2>`+top.map((x,i)=>frow(`${i+1}. ${esc(x.label)}`,`${x.n} lần`,vnd(x.tot))).join('');
+    if(!fund.tx.length)h+='<p class="empty">Chưa có khoản thu chi nào. Quản trị viên bấm “Thêm khoản thu” để bắt đầu.</p>'}
+  else if(fsub=='tx'){
+    h+=[...a].sort((x,y)=>y.d.localeCompare(x.d)).map(x=>frow(esc(personLbl(x.pid,x.who)),`${vnd2(x.d)} ${ftag(x.f)} ${x.t=='chi'?'Chi':'Thu'}${x.note?', '+esc(x.note):''}`,(x.t=='chi'?'−':'+')+vnd(x.amt),adm?`data-a="fedit" data-i="${x.id}"`:'',x.t=='chi'?'chi':'thu')).join('')||'<p class="empty">Không có khoản nào trong bộ lọc này.</p>'}
+  else if(fsub=='tv'||fsub=='gd'){
+    const gs=fsub=='tv'?byMem(a):byFam(a);
+    h+=`<small style="margin-bottom:8px">${fsub=='tv'?'Tổng số tiền mỗi thành viên đã đóng góp':'Tổng số tiền mỗi gia đình đã đóng góp (cộng các thành viên trong hộ)'}${ffy=='all'?'':', năm '+ffy}. Bấm vào một dòng để xem chi tiết.</small>`
+    +gs.map((x,i)=>frow(`${i+1}. ${esc(x.label)}`,`${x.n} lần, gần nhất ${vnd2(x.last)}${ffq=='all'?` · họ ${vnd(x.ho)}, khuyến học ${vnd(x.kh)}`:''}`,vnd(x.tot),`data-a="fdet" data-i="${fsub}:${esc(x.k)}"`)).join('')||'<p class="empty">Chưa có khoản đóng góp nào.</p>';
+    if(fsub=='gd'&&ffy!='all'){const paid=new Set(gs.map(x=>x.k)),no=[...new Set(Object.values(P()).filter(p=>!isD(p)).map(p=>famHead(p.id)))].filter(k=>P()[k]&&!paid.has(k));
+      if(no.length)h+=`<h2>Chưa đóng trong năm ${ffy} (${no.length})</h2>`+no.sort((x,y)=>P()[x].name.localeCompare(P()[y].name,'vi')).map(k=>frow(esc(famName(k)),'',vnd(0),`data-a="view" data-i="${k}"`)).join('')}}
+  else{ // khuyến học
+    const x=fund.tx.filter(z=>z.f=='kh'),chi=x.filter(z=>z.t=='chi').sort((p,q)=>q.d.localeCompare(p.d)),top=byFam(x).slice(0,10);
+    h+=`<div class="row" style="cursor:default;display:block"><b>Quỹ khuyến học</b><small>Số dư hiện tại</small><div style="font-size:22px;font-weight:700">${vnd(balOf('kh'))}</div><small>Tổng thu ${vnd(sumT(x,'thu'))}, đã chi thưởng ${vnd(sumT(x,'chi'))}</small></div>`
+    +(adm?`<div class="act noprint"><button class="pr" data-a="fnew" data-i="kh-thu">Thêm khoản đóng góp</button><button data-a="fnew" data-i="kh-chi">Chi thưởng, học bổng</button><button data-a="achnew">Ghi thành tích kèm thưởng</button></div>`:'')
+    +`<h2>Đã chi thưởng, học bổng (${chi.length})</h2>`+(chi.map(z=>frow(esc(personLbl(z.pid,z.who)),`${vnd2(z.d)}${z.note?', '+esc(z.note):''}`,'−'+vnd(z.amt),adm?`data-a="fedit" data-i="${z.id}"`:'','chi')).join('')||'<p class="empty">Chưa chi khoản nào.</p>')
+    +(top.length?`<h2>Gia đình đóng góp cho quỹ khuyến học</h2>`+top.map((z,i)=>frow(`${i+1}. ${esc(z.label)}`,`${z.n} lần`,vnd(z.tot))).join(''):'')}
+  return h}
+
+const optPeople=sel=>'<option value="">Ngoài danh sách (ghi tên bên dưới)</option>'+Object.values(P()).sort((a,b)=>a.name.localeCompare(b.name,'vi')).map(p=>`<option value="${p.id}"${p.id==sel?' selected':''}>${esc(p.name)}${p.b?' ('+yr(p.b)+')':''}</option>`).join('');
+function fnewDlg(kind,x){
+  if(!canEdit())return;const e=!!x;
+  x=x||{id:'',f:/^kh/.test(kind)?'kh':'ho',t:/chi$/.test(kind)?'chi':'thu',d:todayS(),pid:'',who:'',amt:'',note:''};
+  show(`<h2>${e?'Sửa khoản':x.t=='chi'?'Thêm khoản chi':'Thêm khoản thu'}</h2>
+  <label>Loại<select id="fxt"><option value="thu"${x.t=='thu'?' selected':''}>Thu (đóng góp)</option><option value="chi"${x.t=='chi'?' selected':''}>Chi</option></select></label>
+  <label>Quỹ<select id="fxf"><option value="ho"${x.f=='ho'?' selected':''}>Quỹ họ</option><option value="kh"${x.f=='kh'?' selected':''}>Quỹ khuyến học</option></select></label>
+  <label>Ngày (dd/mm/yyyy)<input id="fxd" value="${dmy(x.d)}" inputmode="numeric"></label>
+  <label>Thành viên đóng góp hoặc nhận<select id="fxp">${optPeople(x.pid)}</select></label>
+  <label>Tên khác (nếu không có trong danh sách)<input id="fxw" value="${esc(x.who)}" maxlength="100"></label>
+  <label>Số tiền (VD: 500000, 500k, 1,5tr)<input id="fxa" value="${x.amt?esc(String(x.amt)):''}" inputmode="decimal"></label>
+  <label>Ghi chú<input id="fxn" value="${esc(x.note)}" maxlength="300"></label>
+  <div class="act"><button class="pr" data-a="fsave" data-i="${esc(x.id)}">Lưu</button>${e?`<button class="dg" data-a="fdel" data-i="${esc(x.id)}">Xoá</button>`:''}<button data-a="wzclose">Đóng</button></div>`)}
+async function fsave(id){
+  const old=fund.tx.find(z=>z.id==id)||{},d=nd($('#fxd').value),amt=parseAmt($('#fxa').value);
+  if(!/^\d{4}-\d\d-\d\d$/.test(d)||!okDate(d))return alert('Ngày không hợp lệ, hãy nhập dd/mm/yyyy.');
+  if(!amt)return alert('Số tiền không hợp lệ.');
+  const it=fcTx({...old,id:id||uid()+uid(),t:$('#fxt').value,f:$('#fxf').value,d,pid:$('#fxp').value,who:$('#fxw').value.trim(),amt,note:$('#fxn').value.trim(),ref:old.ref||''});
+  if(!it)return alert('Dữ liệu chưa hợp lệ.');
+  if(!it.pid&&!it.who&&it.t=='thu'&&!confirm('Chưa chọn người đóng góp. Vẫn lưu?'))return;
+  if(await fundOps([{k:'tx',o:'put',i:it}])){$('#dg').close();msg('Đã lưu')}}
+async function fdel(id){if(!confirm('Xoá khoản này khỏi sổ quỹ?'))return;if(await fundOps([{k:'tx',o:'del',i:id}])){$('#dg').close();msg('Đã xoá')}}
+function fdetDlg(i){
+  const [k,key]=[i.slice(0,2),i.slice(3)],a=ftx().filter(z=>z.t=='thu'),gs=k=='tv'?byMem(a):byFam(a),g=gs.find(x=>x.k==key);if(!g)return;
+  show(`<h2>${esc(g.label)}</h2><small>Tổng ${vnd(g.tot)}, ${g.n} lần${ffy=='all'?'':', năm '+ffy}</small>`
+   +g.items.sort((x,y)=>y.d.localeCompare(x.d)).map(x=>frow((k=='gd'?esc(personLbl(x.pid,x.who))+' · ':'')+vnd2(x.d),`${ftag(x.f)}${x.note?' '+esc(x.note):''}`,'+'+vnd(x.amt),'','thu')).join('')
+   +`<div class="act">${key.slice(0,2)!='w:'&&P()[key]?`<button data-a="view" data-i="${key}">Mở hồ sơ</button>`:''}<button data-a="wzclose">Đóng</button></div>`)}
+
+/* Nhập nhiều khoản thu: dán từ Excel hoặc gõ mỗi dòng "Tên, số tiền, ngày, ghi chú" */
+function fbulkDlg(){if(!canEdit())return;
+  show(`<h2>Nhập nhiều khoản thu</h2>
+  <label>Quỹ<select id="fbf"><option value="ho">Quỹ họ</option><option value="kh">Quỹ khuyến học</option></select></label>
+  <label>Ngày mặc định (dd/mm/yyyy)<input id="fbd" value="${dmy(todayS())}"></label>
+  <label>Danh sách (mỗi dòng một khoản: Tên [Tab hoặc dấu ;] Số tiền [Tab hoặc ;] Ngày (có thể bỏ) [Tab hoặc ;] Ghi chú (có thể bỏ))<textarea id="fbt" rows="8" placeholder="Nguyễn Văn A&#9;500000&#10;Trần Thị B&#9;1tr&#9;15/03/2026&#9;Giỗ tổ"></textarea></label>
+  <div id="fbpv"></div>
+  <div class="act"><button data-a="fbprev">Xem trước</button><button class="pr" data-a="fbgo">Thêm vào sổ quỹ</button><button data-a="wzclose">Đóng</button></div>`)}
+function fbParse(){
+  const df=nd($('#fbd').value),byN={};Object.values(P()).forEach(p=>(byN[norm(p.name)]=byN[norm(p.name)]||[]).push(p.id));
+  return $('#fbt').value.split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>{
+    const c=l.split(/\t|;/).map(x=>x.trim()),name=c[0]||'',amt=parseAmt(c[1]),d=c[2]?nd(c[2]):df,ids=byN[norm(name)]||[];
+    const err=!name?'Thiếu tên':!amt?'Số tiền không hợp lệ':!/^\d{4}-\d\d-\d\d$/.test(d)||!okDate(d)?'Ngày không hợp lệ':'';
+    const pid=ids.length==1?ids[0]:'',note=(c[3]||'')+(ids.length>1?' (trùng tên, chưa gắn hồ sơ)':'');
+    return {name,amt,d,pid,err,warn:ids.length==0?'Không thấy trong gia phả, ghi theo tên':ids.length>1?'Có '+ids.length+' người trùng tên, chưa gắn hồ sơ':'',note}})}
+function fbPrev(){const r=fbParse();
+  $('#fbpv').innerHTML=r.length?`<p><small>${r.filter(x=>!x.err).length}/${r.length} dòng hợp lệ, tổng ${vnd(r.filter(x=>!x.err).reduce((s,x)=>s+x.amt,0))}</small></p>`+r.map(x=>frow(esc(x.name||'(trống)'),x.err?`<span style="color:var(--r)">${x.err}</span>`:x.warn?esc(x.warn):'Khớp hồ sơ',x.err?'':vnd(x.amt))).join(''):'<p class="empty">Chưa có dòng nào.</p>'}
+async function fbGo(){const r=fbParse(),ok=r.filter(x=>!x.err);if(!ok.length)return alert('Chưa có dòng hợp lệ để thêm.');
+  if(r.length!=ok.length&&!confirm(`${r.length-ok.length} dòng lỗi sẽ bị bỏ qua. Thêm ${ok.length} dòng hợp lệ?`))return;
+  const f=$('#fbf').value;if(await fundOps(ok.map(x=>({k:'tx',o:'put',i:{id:uid()+uid(),f,t:'thu',d:x.d,pid:x.pid,who:x.pid?'':x.name,amt:x.amt,note:x.note.trim()}}))))$('#dg').close(),msg(`Đã thêm ${ok.length} khoản thu`)}
+
+/* Thành tích */
+const lvOf=a=>(+a.lv||0)+1;
+const achF=()=>fund.ach.filter(x=>(afc=='all'||x.k==afc)&&(afy=='all'||String(x.d).slice(0,4)==afy));
+function aGroup(list,fam){const m=new Map();for(const x of list){const p=P()[x.pid];if(!p)continue;const k=fam?famHead(x.pid):x.pid;let g=m.get(k);if(!g){g={k,label:fam?famName(k):p.name,n:0,sc:0,top:0,items:[],mem:new Set()};m.set(k,g)}g.n++;g.sc+=lvOf(x);g.top=Math.max(g.top,+x.lv||0);g.items.push(x);g.mem.add(x.pid)}
+  return [...m.values()].sort((a,b)=>b.sc-a.sc||b.n-a.n||a.label.localeCompare(b.label,'vi'))}
+function vAch(){
+  const g=fundGuard();if(g)return g;
+  if(afy!='all'&&!fund.ach.some(x=>String(x.d).slice(0,4)==afy))afy='all';
+  const adm=canEdit(),a=achF(),ys=[...new Set(fund.ach.map(x=>String(x.d).slice(0,4)))].sort().reverse();
+  const subs=[['ds','Danh sách'],['tv','Theo thành viên'],['gd','Theo gia đình']];
+  let h=`<div class="act noprint">${subs.map(([k,t])=>`<button data-a="asub" data-i="${k}" class="${ach_sub==k?'pr':''}">${t}</button>`).join('')}</div>
+  <div class="bar noprint"><select id="afc" aria-label="Loại"><option value="all">Mọi loại thành tích</option>${Object.entries(ACATN).map(([k,t])=>`<option value="${k}"${afc==k?' selected':''}>${t}</option>`).join('')}</select><select id="afy" aria-label="Năm"><option value="all">Mọi năm</option>${ys.map(y=>`<option${y==afy?' selected':''}>${y}</option>`).join('')}</select></div>
+  <div class="act noprint">${adm?'<button class="pr" data-a="achnew">Thêm thành tích</button>':''}<button data-a="fxls">Xuất Excel</button></div>
+  <p class="stat">${a.length} thành tích của ${new Set(a.filter(x=>P()[x.pid]).map(x=>x.pid)).size} người${a.some(x=>!P()[x.pid])?' (có thành tích của người đã xoá khỏi gia phả, hãy sửa hoặc xoá)':''}</p>`;
+  if(ach_sub=='ds')h+=[...a].sort((x,y)=>String(y.d).localeCompare(String(x.d))).map(x=>{const p=P()[x.pid];return frow(esc(x.title),`${esc(p?p.name:'(người đã xoá)')} · ${ACATN[x.k]} · ${LVN[+x.lv]} · ${dmy(x.d)}${x.note?'<br>'+esc(x.note):''}`,x.aw?'Thưởng '+vnd(x.aw):'',adm?`data-a="achedit" data-i="${x.id}"`:`data-a="view" data-i="${x.pid}"`)}).join('')||'<p class="empty">Chưa có thành tích nào.</p>';
+  else{const fam=ach_sub=='gd';h+=`<small style="margin-bottom:8px">Điểm = tổng (mức đạt + 1) của mọi thành tích: gia đình, dòng họ = 1; trường = 2; huyện = 3; tỉnh = 4; quốc gia = 5; quốc tế = 6. ${fam?'Thành tích của các thành viên trong một hộ được cộng chung.':''} Bấm vào dòng để xem chi tiết.</small>`
+    +aGroup(a,fam).map((x,i)=>frow(`${i+1}. ${esc(x.label)}`,`${x.n} thành tích${fam?`, ${x.mem.size} người`:''} · mức cao nhất: ${LVN[x.top]}`,x.sc+' điểm',`data-a="adet" data-i="${ach_sub}:${esc(x.k)}"`)).join('')||'<p class="empty">Chưa có thành tích nào.</p>'}
+  return h}
+function adetDlg(i){const fam=i.slice(0,2)=='gd',key=i.slice(3),g=aGroup(achF(),fam).find(x=>x.k==key);if(!g)return;
+  show(`<h2>${esc(g.label)}</h2><small>${g.n} thành tích, ${g.sc} điểm</small>`+g.items.sort((x,y)=>String(y.d).localeCompare(String(x.d))).map(x=>frow(esc(x.title),`${fam?esc((P()[x.pid]||{}).name)+' · ':''}${ACATN[x.k]} · ${LVN[+x.lv]} · ${dmy(x.d)}`,x.aw?vnd(x.aw):'')).join('')+`<div class="act">${!fam&&P()[key]?`<button data-a="view" data-i="${key}">Mở hồ sơ</button>`:''}<button data-a="wzclose">Đóng</button></div>`)}
+function achDlg(x,pid){
+  if(!canEdit())return;const e=!!(x&&x.id);
+  x=x||{id:'',pid:pid||'',d:String(new Date().getFullYear()),k:'hoc-tap',title:'',lv:'1',aw:0,note:''};
+  const linked=fund.tx.find(z=>z.ref==x.id&&x.id);
+  show(`<h2>${e?'Sửa thành tích':'Thêm thành tích'}</h2>
+  <label>Thành viên<select id="axp">${optPeople(x.pid).replace('<option value="">Ngoài danh sách (ghi tên bên dưới)</option>','<option value="">Chọn thành viên</option>')}</select></label>
+  <label>Thành tích<input id="axt" value="${esc(x.title)}" maxlength="200" placeholder="VD: Học sinh giỏi quốc gia môn Toán"></label>
+  <label>Loại<select id="axk">${Object.entries(ACATN).map(([k,t])=>`<option value="${k}"${x.k==k?' selected':''}>${t}</option>`).join('')}</select></label>
+  <label>Mức đạt<select id="axl">${LVN.map((t,i)=>`<option value="${i}"${+x.lv==i?' selected':''}>${t}</option>`).join('')}</select></label>
+  <label>Năm hoặc ngày (yyyy hoặc dd/mm/yyyy)<input id="axd" value="${dmy(x.d)}"></label>
+  <label>Tiền thưởng (nếu có)<input id="axa" value="${x.aw?esc(String(x.aw)):''}" inputmode="decimal"></label>
+  <label class="chk"><input type="checkbox" id="axc"${linked?' checked':''}> Ghi khoản chi thưởng này vào quỹ khuyến học</label>
+  <label>Ghi chú<input id="axn" value="${esc(x.note)}" maxlength="500"></label>
+  <div class="act"><button class="pr" data-a="achsave" data-i="${esc(x.id)}">Lưu</button>${e?`<button class="dg" data-a="achdel" data-i="${esc(x.id)}">Xoá</button>`:''}<button data-a="wzclose">Đóng</button></div>`)}
+async function achSave(id){
+  const old=fund.ach.find(z=>z.id==id)||{},aid=id||uid()+uid(),d=String($('#axd').value).trim(),dd=/^\d{4}$/.test(d)?d:nd(d),aw=parseAmt($('#axa').value);
+  if(!$('#axp').value)return alert('Hãy chọn thành viên.');
+  if(!$('#axt').value.trim())return alert('Hãy nhập tên thành tích.');
+  if(!okDate(dd)||!dd)return alert('Ngày không hợp lệ, hãy nhập năm (yyyy) hoặc dd/mm/yyyy.');
+  const it=fcAch({id:aid,pid:$('#axp').value,d:dd,k:$('#axk').value,title:$('#axt').value,lv:$('#axl').value,aw,note:$('#axn').value.trim()});
+  if(!it)return alert('Dữ liệu chưa hợp lệ.');
+  const ops=[{k:'ach',o:'put',i:it}],link=fund.tx.find(z=>z.ref==aid);
+  if($('#axc').checked&&aw){const day=/^\d{4}-\d\d-\d\d$/.test(dd)?dd:todayS();ops.push({k:'tx',o:'put',i:{...(link||{}),id:link?link.id:uid()+uid(),f:'kh',t:'chi',d:day,pid:it.pid,who:'',amt:aw,note:('Thưởng: '+it.title).slice(0,300),ref:aid}})}
+  else if(link)ops.push({k:'tx',o:'del',i:link.id});
+  if(await fundOps(ops)){$('#dg').close();msg('Đã lưu thành tích')}}
+async function achDel(id){if(!confirm('Xoá thành tích này? Khoản chi thưởng gắn kèm (nếu có) cũng bị xoá.'))return;if(await fundOps([{k:'ach',o:'del',i:id}])){$('#dg').close();msg('Đã xoá')}}
+
+/* Xuất Excel: thu chi, theo thành viên, theo gia đình, thành tích */
+function fundXls(){
+  if(!window.XLSX)return msg('Chưa tải được thư viện Excel, kiểm tra mạng');
+  const wb=XLSX.utils.book_new(),add=(n,rows,w)=>{const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=w.map(wch=>({wch}));XLSX.utils.book_append_sheet(wb,ws,n)},a=ftx();
+  if(can('fund')){
+    add('Thu chi',[['Ngày','Quỹ','Loại','Người','Số tiền','Ghi chú'],...[...a].sort((x,y)=>y.d.localeCompare(x.d)).map(x=>[vnd2(x.d),FUNDN[x.f],x.t=='chi'?'Chi':'Thu',personLbl(x.pid,x.who),x.amt,x.note])],[12,16,8,28,14,40]);
+    add('Theo thành viên',[['Thành viên','Số lần','Quỹ họ','Quỹ khuyến học','Tổng','Gần nhất'],...byMem(a).map(x=>[x.label,x.n,x.ho,x.kh,x.tot,vnd2(x.last)])],[28,8,14,16,14,12]);
+    add('Theo gia đình',[['Gia đình','Số lần','Quỹ họ','Quỹ khuyến học','Tổng','Gần nhất'],...byFam(a).map(x=>[x.label,x.n,x.ho,x.kh,x.tot,vnd2(x.last)])],[34,8,14,16,14,12])}
+  if(can('ach')){const l=achF();
+    add('Thành tích',[['Thành viên','Gia đình','Thành tích','Loại','Mức','Thời gian','Tiền thưởng','Ghi chú'],...l.map(x=>[(P()[x.pid]||{}).name||'',famName(famHead(x.pid)),x.title,ACATN[x.k],LVN[+x.lv],dmy(x.d),x.aw||'',x.note])],[26,30,40,18,18,12,14,30]);
+    add('Điểm thành viên',[['Thành viên','Số thành tích','Điểm'],...aGroup(l,false).map(x=>[x.label,x.n,x.sc])],[28,14,10]);
+    add('Điểm gia đình',[['Gia đình','Số thành tích','Số người','Điểm'],...aGroup(l,true).map(x=>[x.label,x.n,x.mem.size,x.sc])],[34,14,10,10])}
+  if(!wb.SheetNames.length)return msg('Không có dữ liệu để xuất');
+  XLSX.writeFile(wb,'giapha-quy-thanhtich.xlsx')}
+
+/* ---------- Khung ảnh đại diện, cắt và chỉnh ảnh ---------- */
+const FRS={circle:'Hình tròn',oval:'Ô van đứng',ovalh:'Ô van ngang',rounded:'Vuông bo góc',square:'Hình vuông',portrait:'Chữ nhật đứng',landscape:'Chữ nhật ngang'};
+const FRA={circle:1,rounded:1,square:1,oval:.75,portrait:.75,ovalh:4/3,landscape:4/3};
+let frameDef=(()=>{try{const x=localStorage.gpfrg;return FRS[x]?x:'circle'}catch(e){return 'circle'}})(),formPh=null,formP=null,crop=null;
+const frOf=p=>p&&FRS[p.fr]?p.fr:frameDef;
+const frOpts=cur=>`<option value="">Theo mặc định chung (${FRS[frameDef]})</option>`+Object.entries(FRS).map(([k,t])=>`<option value="${k}"${cur==k?' selected':''}>${t}</option>`).join('');
+function shapePath(x,w,h,f){x.moveTo(0,0);
+  if(f=='circle'||f=='oval'||f=='ovalh'){x.moveTo(w-1,h/2);x.ellipse(w/2,h/2,w/2-1,h/2-1,0,0,Math.PI*2);return}
+  const r=f=='rounded'?Math.min(w,h)*.22:f=='square'?0:Math.min(w,h)*.08;
+  x.moveTo(r,1);x.arcTo(w-1,1,w-1,h-1,r);x.arcTo(w-1,h-1,1,h-1,r);x.arcTo(1,h-1,1,1,r);x.arcTo(1,1,w-1,1,r);x.closePath()}
+const cropEff=()=>crop.cur||frameDef;
+function cropSize(){const ar=FRA[cropEff()];return ar>=1?[280,Math.round(280/ar)]:[Math.round(280*ar),280]}
+function cropSrc(){const c=crop,b=c.base,r=c.rot%2,w=r?b.height:b.width,h=r?b.width:b.height,s=document.createElement('canvas');s.width=w;s.height=h;
+  const x=s.getContext('2d');x.translate(w/2,h/2);x.rotate(c.rot*Math.PI/2);if(c.flip)x.scale(-1,1);x.drawImage(b,-b.width/2,-b.height/2);c.src=s}
+function cropDraw(cv,vw,vh,q,preview){
+  const c=crop,s=c.src,cov=Math.max(vw/s.width,vh/s.height),k=cov*c.zoom,dw=s.width*k,dh=s.height*k,mx=Math.max(0,(dw-vw)/2),my=Math.max(0,(dh-vh)/2);
+  c.ox=Math.max(-mx,Math.min(mx,c.ox));c.oy=Math.max(-my,Math.min(my,c.oy));
+  const x=cv.getContext('2d');x.setTransform(q,0,0,q,0,0);x.fillStyle='#fff';x.fillRect(0,0,vw,vh);x.drawImage(s,vw/2+c.ox-dw/2,vh/2+c.oy-dh/2,dw,dh);
+  if(c.br||c.ct){x.setTransform(1,0,0,1,0,0);const id=x.getImageData(0,0,cv.width,cv.height),d=id.data,f=(259*(c.ct+255))/(255*(259-c.ct)),b=c.br*2.55,cl=v=>v<0?0:v>255?255:v;
+    for(let i=0;i<d.length;i+=4){d[i]=cl(f*(d[i]-128)+128+b);d[i+1]=cl(f*(d[i+1]-128)+128+b);d[i+2]=cl(f*(d[i+2]-128)+128+b)}x.putImageData(id,0,0);x.setTransform(q,0,0,q,0,0)}
+  if(preview){x.fillStyle='rgba(0,0,0,.5)';x.beginPath();x.rect(0,0,vw,vh);shapePath(x,vw,vh,cropEff());x.fill('evenodd');
+    x.strokeStyle='#fff';x.lineWidth=1.5;x.beginPath();shapePath(x,vw,vh,cropEff());x.stroke()}}
+function cropRedraw(){const cv=$('#crc');if(!cv||!crop)return;const [w,h]=cropSize();if(cv.width!=w||cv.height!=h){cv.width=w;cv.height=h}cropDraw(cv,w,h,1,true)}
+function openCrop(url,o){
+  const im=new Image();im.onerror=()=>msg('Không đọc được ảnh này');
+  im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height)),b=document.createElement('canvas');b.width=Math.round(im.width*k);b.height=Math.round(im.height*k);b.getContext('2d').drawImage(im,0,0,b.width,b.height);
+    crop={base:b,rot:0,flip:false,zoom:1,ox:0,oy:0,br:0,ct:0,pick:!!o.pick,cur:o.cur||'',done:o.done,cancel:o.cancel,ok:false};cropSrc();
+    let d=$('#crd');if(!d){d=document.createElement('dialog');d.id='crd';document.body.appendChild(d);
+      d.addEventListener('close',()=>{if(crop&&!crop.ok&&crop.cancel)crop.cancel();crop=null})}
+    const [w,h]=cropSize();
+    d.innerHTML=`<h2>Cắt và chỉnh ảnh</h2><small style="margin-bottom:6px">Kéo ảnh để chọn vị trí, kéo thanh để phóng to. Phần tối nằm ngoài khung nên sẽ bị cắt.</small>
+    <div style="display:grid;place-items:center;margin:8px 0"><canvas id="crc" width="${w}" height="${h}" style="touch-action:none;cursor:grab;background:#fff;max-width:100%;border-radius:6px"></canvas></div>
+    <label>Phóng to<input id="crz" type="range" min="1" max="4" step="0.01" value="1"></label>
+    <label>Độ sáng<input id="crb" type="range" min="-50" max="50" step="1" value="0"></label>
+    <label>Độ tương phản<input id="crt" type="range" min="-50" max="50" step="1" value="0"></label>
+    <div class="act" style="margin-top:6px"><button data-a="crrl">Xoay trái</button><button data-a="crrr">Xoay phải</button><button data-a="crfl">Lật ngang</button><button data-a="crrs">Đặt lại</button></div>
+    ${crop.pick?`<label>Khung ảnh của người này<select id="crf">${frOpts(crop.cur)}</select></label>`:`<small>Khung đang dùng: ${FRS[frameDef]} (do quản trị viên chọn).</small>`}
+    <div class="act"><button class="pr" data-a="crok">Dùng ảnh này</button><button data-a="crno">Huỷ</button></div>`;
+    if(!d.open)d.showModal();cropRedraw();
+    const cv=$('#crc');let drag=null;
+    cv.addEventListener('pointerdown',e=>{drag=[e.clientX,e.clientY];cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing'});
+    cv.addEventListener('pointermove',e=>{if(!drag||!crop)return;crop.ox+=e.clientX-drag[0];crop.oy+=e.clientY-drag[1];drag=[e.clientX,e.clientY];cropRedraw()});
+    const up=()=>{drag=null;cv.style.cursor='grab'};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+    cv.addEventListener('wheel',e=>{e.preventDefault();const z=$('#crz');z.value=Math.max(1,Math.min(4,+z.value+(e.deltaY<0?.1:-.1)));crop.zoom=+z.value;cropRedraw()},{passive:false})};
+  im.src=url}
+function cropFinish(){
+  if(!crop)return;const [vw,vh]=cropSize(),ar=FRA[cropEff()],ow=ar>=1?200:Math.round(200*ar),oh=ar>=1?Math.round(200/ar):200,cv=document.createElement('canvas');cv.width=ow;cv.height=oh;
+  cropDraw(cv,vw,vh,ow/vw,false);let u='';for(const q of [.8,.7,.6,.5,.4]){u=cv.toDataURL('image/jpeg',q);if(u.length<=30000)break}
+  const done=crop.done,c=crop.pick?crop.cur:undefined;crop.ok=true;$('#crd').close();if(done)done(u,c)}
+document.addEventListener('input',e=>{const t=e.target;if(!crop)return;
+  if(t.id=='crz'){crop.zoom=+t.value;cropRedraw()}if(t.id=='crb'){crop.br=+t.value;cropRedraw()}if(t.id=='crt'){crop.ct=+t.value;cropRedraw()}});
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.id=='crf'&&crop){crop.cur=t.value;cropRedraw()}
+  if(t.name=='fr'&&t.tagName=='SELECT'){const a=$('#avprev .av');if(a)a.className=a.className.replace(/fr-\w+/,'fr-'+(t.value||frameDef))}});
+function frDone(pid,u,c){const p=P()[pid];if(!p)return;
+  if(role=='de-xuat')return propose('edit',pid,{name:p.name,ph:u});
+  if(!canEdit())return;p.ph=u;if(c!==undefined)p.fr=c;save();detail(pid);msg('Đã cập nhật ảnh đại diện')}
+function frMemApply(){}
+const frSetDef=async k=>{if(!FRS[k])return;
+  if(role=='local'){frameDef=k;try{localStorage.gpfrg=k}catch(e){}render();return msg('Đã đổi khung mặc định')}
+  try{const r=await api('frame',{frame:k});if(r.err)return msg(r.err);frameDef=FRS[r.frame]?r.frame:'circle';try{localStorage.gpfrg=frameDef}catch(e){}render();msg('Đã đổi khung mặc định')}catch(e){if(!e||e.err!='auth')fail(e)}};
+const vFrame=()=>{const n=Object.values(P()).filter(p=>p.fr).length;
+  return `<h2>Khung ảnh đại diện</h2><small style="margin-bottom:8px">Chọn khung mặc định cho ảnh của mọi người, hiện ở hồ sơ, cây và danh sách. Từng người có thể có khung riêng (chọn trong form sửa hoặc khi cắt ảnh).</small>
+  <div class="frs">${Object.entries(FRS).map(([k,t])=>`<button data-a="frdef" data-i="${k}" class="frb${k==frameDef?' on':''}" aria-pressed="${k==frameDef}"><span class="av m fr-${k}">A</span><small>${t}</small></button>`).join('')}</div>
+  <div class="act"><button data-a="frall"${n?'':' disabled'}>Áp dụng cho mọi người${n?` (bỏ khung riêng của ${n} người)`:''}</button></div>`};
+Object.assign(A,{crrl:()=>{crop.rot=(crop.rot+3)%4;crop.ox=crop.oy=0;cropSrc();cropRedraw()},crrr:()=>{crop.rot=(crop.rot+1)%4;crop.ox=crop.oy=0;cropSrc();cropRedraw()},crfl:()=>{crop.flip=!crop.flip;cropSrc();cropRedraw()},
+  crrs:()=>{Object.assign(crop,{rot:0,flip:false,zoom:1,ox:0,oy:0,br:0,ct:0});['crz','crb','crt'].forEach((i,k)=>{$('#'+i).value=k?0:1});cropSrc();cropRedraw()},
+  crok:cropFinish,crno:()=>{$('#crd').close()},
+  frdef:i=>frSetDef(i),
+  frall:()=>{if(!canEdit())return;const n=Object.values(P()).filter(p=>p.fr).length;if(!n||!confirm(`Bỏ khung riêng của ${n} người để tất cả dùng khung mặc định (${FRS[frameDef]})?`))return;Object.values(P()).forEach(p=>{if(p.fr)p.fr=''});save();msg('Đã áp dụng khung mặc định cho mọi người')},
+  rcrop:i=>{const p=P()[i];if(!p||!p.ph)return;$('#dg').close();openCrop(p.ph,{pick:canEdit(),cur:p.fr||'',done:(u,c)=>frDone(i,u,c)})},
+  recrop:()=>{const u=formPh?formPh.u:formP&&formP.ph;if(!u)return;const s=$('#dg form [name=fr]');
+    openCrop(u,{pick:false,cur:s?s.value:'',done:u2=>{formPh={u:u2};const a=$('#avprev');if(a)a.innerHTML=`<img class="av fr-${(s&&s.value)||frameDef}" src="${u2}" alt="">`}})}});
+
+
+/* Hình nền: phả đồ (t) và các trang khác (p) */
+const BGS={none:['Mặc định','',''],giay:['Giấy cổ','#f4ecd8','#2a2519'],xanh:['Xanh nhạt','linear-gradient(#dcecf4,#f5fafc)','linear-gradient(#17252d,#12191d)'],hong:['Hồng đào','linear-gradient(#fbe9e7,#fff7f2)','linear-gradient(#2c1d1f,#1e1517)'],la:['Xanh lá','linear-gradient(#e0efe0,#f4f9ee)','linear-gradient(#16251a,#121a14)'],troi:['Bầu trời','linear-gradient(#c6e2f6,#f7fbff)','linear-gradient(#14253a,#0f171d)'],hoang:['Hoàng hôn','linear-gradient(#fde5c4,#f6cfd2)','linear-gradient(#2d2118,#2a1a22)'],cham:['Chấm nhỏ','radial-gradient(#c3cfca 1.2px,transparent 1.4px) 0 0/16px 16px #f6f7f6','radial-gradient(#3b4d55 1.2px,transparent 1.4px) 0 0/16px 16px #161f24'],luoi:['Ô vuông','linear-gradient(#dde5e1 1px,transparent 1px) 0 0/22px 22px,linear-gradient(90deg,#dde5e1 1px,transparent 1px) 0 0/22px 22px,#f8faf9','linear-gradient(#2a383f 1px,transparent 1px) 0 0/22px 22px,linear-gradient(90deg,#2a383f 1px,transparent 1px) 0 0/22px 22px,#151e23']};
+let bgc=(()=>{try{const o=JSON.parse(localStorage.gpbg);return o&&typeof o=='object'?o:{}}catch(e){return {}}})();
+const bgOv=w=>bgc[w+'o']==null?60:Math.max(0,Math.min(90,+bgc[w+'o']||0));
+function bgCss(w,dark){const k=bgc[w],img=bgc[w+'i'];
+  if(k=='img'&&img){const o=bgOv(w)/100,c=dark?'18,25,29':'255,255,255';return `linear-gradient(rgba(${c},${o}),rgba(${c},${o})),url(${img}) center/cover`}
+  const b=BGS[k];return b?b[dark?2:1]:''}
+function applyBg(){let st=$('#bgst');if(!st){st=document.createElement('style');st.id='bgst';document.head.appendChild(st)}
+  const rule=(w,sel,dark)=>{const c=bgCss(w,dark);return c?`${sel}{background:${c};${w=='p'?'background-attachment:fixed;':'border-radius:10px;'}}`:''};
+  const dk=(sel,w)=>rule(w,sel,1);
+  const dm=dk('body','p')+dk('.tree','t');
+  st.textContent=rule('p','body',0)+rule('t','.tree',0)+(dm?`@media(prefers-color-scheme:dark){${dk(':root:not([data-theme=light]) body','p')}${dk(':root:not([data-theme=light]) .tree','t')}}${dk(':root[data-theme=dark] body','p')}${dk(':root[data-theme=dark] .tree','t')}`:'')}
+function setBg(n){bgc=n&&typeof n=='object'?n:{};try{localStorage.gpbg=JSON.stringify(bgc)}catch(e){}render()}
+async function bgSave(p){const n={...bgc,...p};
+  if(role=='local'){setBg(n);return msg('Đã đổi hình nền')}
+  try{const r=await api('bg',{bg:n});if(r.err)return msg(r.err);setBg(r.bg);msg('Đã đổi hình nền')}catch(e){if(!e||e.err!='auth')fail(e)}}
+function bgImg(f,done){const im=new Image();im.onerror=()=>msg('Không đọc được ảnh này');
+  im.onload=()=>{let m=1200;for(;;){const k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    for(const q of[.8,.65,.5,.38]){const u=c.toDataURL('image/jpeg',q);if(u.length<=70000)return done(u)}
+    m=Math.round(m*.75);if(m<300)return msg('Không thu nhỏ được ảnh này, hãy chọn ảnh khác')}};
+  im.src=URL.createObjectURL(f)}
+const vBg=()=>{const grp=(w,ttl,hint)=>{const k=bgc[w]||'none',has=!!bgc[w+'i'];
+  const sw=(key,name,style)=>`<button data-a="bgset" data-i="${w}:${key}" class="frb${k==key?' on':''}" aria-pressed="${k==key}"><span class="bgsw" style="${style}"></span><small>${name}</small></button>`;
+  return `<div style="margin:10px 0 4px"><b>${ttl}</b></div><small style="margin-bottom:6px">${hint}</small>
+  <div class="frs">${Object.entries(BGS).map(([key,b])=>sw(key,b[0],b[1]?`background:${b[1]}`:'background:var(--bg)')).join('')}${has?sw('img','Ảnh riêng',`background:url(${bgc[w+'i']}) center/cover`):''}</div>
+  <div class="act"><label class="bgup">${has?'Đổi ảnh riêng…':'Chọn ảnh riêng…'}<input type="file" accept="image/*" data-bgf="${w}" hidden></label></div>
+  ${k=='img'&&has?`<label>Độ phủ làm mờ ảnh (giúp chữ dễ đọc): <b id="bgov-${w}">${bgOv(w)}%</b><input type="range" min="0" max="90" step="5" value="${bgOv(w)}" data-bgo="${w}"></label>`:''}`};
+  return `<h2>Hình nền</h2><small style="margin-bottom:6px">Quản trị viên chọn hình nền cho phả đồ và cho các trang còn lại; mọi người cùng thấy. Có thể dùng mẫu có sẵn hoặc ảnh riêng (ví dụ ảnh nhà thờ họ, quê hương).</small>
+  ${grp('t','Nền phả đồ','“Mặc định” là dùng luôn nền của trang.')}${grp('p','Nền các trang khác','Áp dụng cho danh sách, hồ sơ, lịch, quỹ… (khi in thì luôn nền trắng).')}
+  <div class="act"><button data-a="bgreset"${Object.keys(bgc).some(x=>bgc[x])?'':' disabled'}>Bỏ hết hình nền</button></div>`};
+Object.assign(A,{bgset:i=>{const[w,k]=String(i).split(':');if(!canEdit()||!['t','p'].includes(w))return;if(k=='img'&&!bgc[w+'i'])return;bgSave({[w]:k,[w+'o']:bgOv(w)})},
+  bgreset:()=>{if(canEdit()&&confirm('Bỏ hết hình nền (cả ảnh riêng đã chọn)?'))bgSave({t:'none',p:'none',ti:'',pi:'',to:60,po:60})}});
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.dataset&&t.dataset.bgf&&t.files[0]&&canEdit()){const w=t.dataset.bgf,f=t.files[0];t.value='';bgImg(f,u=>bgSave({[w]:'img',[w+'i']:u,[w+'o']:bgOv(w)}))}
+  if(t.dataset&&t.dataset.bgo&&canEdit())bgSave({[t.dataset.bgo+'o']:+t.value})});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.bgo){const w=t.dataset.bgo;bgc[w+'o']=+t.value;const s=$('#bgov-'+w);if(s)s.textContent=t.value+'%';applyBg()}});
+
+/* Báo cáo quỹ và thành tích để in hoặc lưu PDF (dùng cho buổi họp họ) */
+function vRep(){
+  const g=fundGuard();if(g)return g;
+  const Y=ffy=='all'?'':ffy,fs=ffq=='all'?['ho','kh']:[ffq],inY=x=>!Y||String(x.d).slice(0,4)==Y;
+  const tbl=(head,rows,foot)=>`<table class="rpt"><tr>${head.map(c=>`<th${c[1]?' class="n"':''}>${c[0]}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map((c,i)=>`<td${head[i][1]?' class="n"':''}>${c}</td>`).join('')}</tr>`).join('')}${foot?`<tr class="tt">${foot.map((c,i)=>`<td${head[i]&&head[i][1]?' class="n"':''}>${c}</td>`).join('')}</tr>`:''}</table>`;
+  let h=`<div class="rp"><div class="bar noprint"><button data-a="frepb">‹ Quỹ</button><button class="pr" data-a="prn2">In hoặc lưu PDF</button></div><small class="noprint" style="margin-bottom:8px">Muốn đổi năm hoặc quỹ, quay lại màn hình Quỹ để chọn bộ lọc rồi bấm “In báo cáo” lại.</small><h1>${esc(defTitle())}</h1><h2 style="text-align:center;margin-top:4px">Báo cáo quỹ và thành tích${Y?' năm '+Y:''}</h2><small style="text-align:center;margin-bottom:10px">Ngày lập ${vnd2(todayS())}</small>`;
+  if(can('fund'))for(const f of fs){
+    const all=fund.tx.filter(x=>x.f==f),pre=Y?all.filter(x=>x.d<Y+'-01-01'):[],cur=all.filter(inY),open=sumT(pre,'thu')-sumT(pre,'chi'),th=sumT(cur,'thu'),ch=sumT(cur,'chi');
+    h+=`<h2>${FUNDN[f]}</h2>`+tbl([['Khoản mục'],['Số tiền',1]],[['Số dư đầu kỳ',vnd(open)],['Tổng thu',vnd(th)],['Tổng chi',vnd(ch)]],['Số dư cuối kỳ',vnd(open+th-ch)]);
+    const fam=byFam(cur);
+    if(fam.length)h+='<h3>Đóng góp theo gia đình</h3>'+tbl([['STT'],['Gia đình'],['Số lần',1],['Số tiền',1]],fam.map((x,i)=>[i+1,esc(x.label),x.n,vnd(x.tot)]),['','Cộng',fam.reduce((s,x)=>s+x.n,0),vnd(fam.reduce((s,x)=>s+x.tot,0))]);
+    const chi=cur.filter(x=>x.t=='chi').sort((p,q)=>p.d.localeCompare(q.d));
+    if(chi.length)h+='<h3>Các khoản chi</h3>'+tbl([['Ngày'],['Nội dung, người nhận'],['Số tiền',1]],chi.map(x=>[vnd2(x.d),esc((x.note||'')+((x.pid||x.who)?(x.note?' — ':'')+personLbl(x.pid,x.who):'')),vnd(x.amt)]),['','Cộng',vnd(sumT(chi,'chi'))])}
+  if(can('ach')){const l=fund.ach.filter(x=>P()[x.pid]&&inY(x)).sort((p,q)=>String(p.d).localeCompare(String(q.d)));
+    if(l.length){h+='<h2>Thành tích</h2>'+tbl([['STT'],['Thành viên'],['Thành tích'],['Mức'],['Thời gian'],['Thưởng',1]],l.map((x,i)=>[i+1,esc(P()[x.pid].name),esc(x.title),LVN[+x.lv],dmy(x.d),x.aw?vnd(x.aw):'']),['','','','','Cộng thưởng',vnd(l.reduce((s,x)=>s+(x.aw||0),0))]);
+      const gf=aGroup(l,true);h+='<h3>Tổng hợp theo gia đình</h3>'+tbl([['STT'],['Gia đình'],['Số thành tích',1],['Điểm',1]],gf.map((x,i)=>[i+1,esc(x.label),x.n,x.sc]))}}
+  return h+'<div class="sig"><div>Thủ quỹ<br><small>(ký, ghi rõ họ tên)</small></div><div>Trưởng họ<br><small>(ký, ghi rõ họ tên)</small></div></div></div>'}
+
+/* Hồ sơ từng người: thành tích và đóng góp */
+function fundBits(p){
+  if(!fundOk)return '';let h='';
+  if(can('ach')){const l=fund.ach.filter(x=>x.pid==p.id).sort((x,y)=>String(y.d).localeCompare(String(x.d)));
+    if(l.length)h+=`<h2>Thành tích (${l.length})</h2>`+l.map(x=>`<p><b>${esc(x.title)}</b><small>${ACATN[x.k]} · ${LVN[+x.lv]} · ${dmy(x.d)}${x.aw?' · thưởng '+vnd(x.aw):''}</small></p>`).join('')}
+  if(can('fund')){const l=fund.tx.filter(x=>x.pid==p.id&&x.t=='thu');
+    if(l.length)h+=`<p><small>Đóng góp quỹ</small>${vnd(l.reduce((s,x)=>s+x.amt,0))} (${l.length} lần)</p>`}
+  return h}
+const histBtns=id=>(role=='quan-tri'&&idt?`<button data-a="hist" data-i="${id}">Lịch sử thay đổi</button>`:'')+(canEdit()?`<button data-a="achnew" data-i="${id}">Thêm thành tích</button>`:'');
+
+/* Lịch sử thay đổi từng người, hoàn tác một sửa đổi */
+let hlogs=[];
+const undoable=x=>{if(!x||!x.id)return false;if(x.act=='them'||(x.act=='duyet'&&x.op=='add'))return true;if(x.act=='sua'||(x.act=='duyet'&&x.op=='edit'))return !!x.old&&Object.keys(x.old).length>0;if(x.act=='xoa'||(x.act=='duyet'&&x.op=='del'))return !!x.p;return false};
+function delPerson(i){delete P()[i];Object.values(P()).forEach(q=>{for(const k of ['fid','mid','sid'])if(q[k]==i)q[k]='';if(q.xs)q.xs=q.xs.split(',').filter(x=>x&&x!=i).join(',')})}
+function undoEntry(x){
+  if(!canEdit()||!undoable(x))return;const id=x.id,t=x.act=='duyet'?x.op:x.act;
+  if(t=='them'||t=='add'){if(!P()[id])return msg('Người này không còn trong gia phả');if(!confirm(`Hoàn tác việc thêm "${x.n}"?\nNgười này sẽ bị xoá khỏi gia phả.`))return;delPerson(id)}
+  else if(t=='sua'||t=='edit'){const p=P()[id];if(!p)return msg('Người này không còn trong gia phả');
+    if(!confirm(`Hoàn tác sửa đổi của "${p.name}"?\nCác mục sẽ trở về giá trị cũ: ${Object.keys(x.old).map(k=>LF[k]||k).join(', ')}.`))return;
+    const oldSp=spAll(p);Object.keys(x.old).forEach(k=>{p[k]=x.old[k]});
+    for(const f of ['fid','mid','sid'])if(p[f]&&(!P()[p[f]]||p[f]==id))p[f]='';
+    p.xs=String(p.xs||'').split(',').filter(z=>z&&z!=id&&P()[z]).join(',');syncSp(id,oldSp)}
+  else{if(P()[id])return msg('Người này đã có lại trong gia phả');
+    if(!confirm(`Khôi phục "${x.n}" đã bị xoá?\nQuan hệ của người khác trỏ tới người này (cha, mẹ, vợ, chồng của người khác) đã bị gỡ khi xoá và cần nối lại bằng tay.`))return;
+    const p={...x.p,id};for(const f of ['fid','mid','sid'])if(p[f]&&!P()[p[f]])p[f]='';p.xs=String(p.xs||'').split(',').filter(z=>z&&P()[z]).join(',');P()[id]=p;syncSp(id,[])}
+  $('#dg').open&&$('#dg').close();save();msg('Đã hoàn tác')}
+const logRow=(x,ref)=>`<div class="row" style="cursor:default"><div style="flex:1"><b>${LA[x.act]||esc(x.act)}${x.op?' '+(OPW[x.op]||''):''}: ${esc(x.n)}</b><small>${new Date(x.at).toLocaleString('vi-VN')}, ${esc(x.by)}${x.from?`, người đề xuất ${esc(x.from)}`:''}</small>${x.f&&x.f.length?`<small>${x.f.map(k=>esc(LF[k]||k)).join(', ')}</small>`:''}</div>${undoable(x)?`<button data-a="undo" data-i="${ref}">Hoàn tác</button>`:''}</div>`;
+function histDlg(id){
+  const p=P()[id];if(!p)return;
+  api('log',{id,name:p.name}).then(r=>{hlogs=r.log||[];show(`<h2>Lịch sử: ${esc(p.name)}</h2><small style="margin-bottom:8px">Các lần thêm, sửa, xoá, duyệt đề xuất liên quan đến người này. “Hoàn tác” đưa các mục đã đổi về giá trị cũ; các nội dung khác giữ nguyên.</small>`
+    +([...hlogs].map((x,i)=>logRow(x,'h:'+i)).reverse().join('')||'<p class="empty">Chưa có thay đổi nào được ghi lại.</p>')+'<div class="act"><button data-a="wzclose">Đóng</button></div>')}).catch(fail)}
+
+/* Nhập nhanh bằng bảng: dán từ Excel, xem trước, kiểm tra lỗi quan hệ trước khi nhập */
+const BCOLS=['name','g','b','d','pl','fn','mn','sn','note'],BLBL=['Họ tên','Giới tính','Ngày sinh','Ngày mất','Quê quán','Tên cha','Tên mẹ','Tên vợ/chồng','Ghi chú'];
+function bulkDlg(){if(!canEdit())return msg('Bạn không có quyền nhập dữ liệu');
+  show(`<h2>Nhập nhanh bằng bảng</h2><small style="margin-bottom:8px">Dán từ Excel hoặc Google Sheets (mỗi người một dòng). Thứ tự cột nếu không có dòng tiêu đề: ${BLBL.join(', ')}. Nếu dán cả dòng tiêu đề (cột Mã, Họ và tên, Ngày sinh… như tệp mẫu) thì app tự nhận cột. Cha, mẹ, vợ/chồng điền bằng tên (phải là duy nhất trong gia phả hoặc trong bảng).</small>
+  <textarea id="bkt" rows="9" placeholder="Nguyễn Văn A&#9;Nam&#9;21/03/1950&#9;&#9;Hà Nội&#9;&#9;&#9;Trần Thị B"></textarea><div id="bkpv"></div>
+  <div class="act"><button data-a="bkprev">Xem trước</button><button class="pr" data-a="bkgo">Nhập</button><button data-a="wzclose">Đóng</button></div>`)}
+function bkParse(){
+  const L=$('#bkt').value.split(/\r?\n/).filter(l=>l.trim()),cells=l=>l.split('\t').map(x=>x.trim());if(!L.length)return [];
+  const h=cells(L[0]).map(c=>XF[norm(c).replace(/[^a-z0-9]/g,'')]),hdr=h.filter(Boolean).length>=2;
+  return (hdr?L.slice(1):L).map(l=>{const c=cells(l),o={};if(hdr)h.forEach((f,i)=>{if(f&&c[i]!==undefined)o[f]=c[i]});else BCOLS.forEach((f,i)=>{if(c[i]!==undefined)o[f]=c[i]});return o}).filter(o=>o.name)}
+function bkPrev(){
+  const R=bkParse(),byN={};Object.values(P()).forEach(p=>(byN[norm(p.name)]=byN[norm(p.name)]||[]).push(p.id));R.forEach((o,i)=>(byN[norm(o.name)]=byN[norm(o.name)]||[]).push('r'+i));
+  const chk=nm=>{if(!nm)return '';const l=byN[norm(nm)];return !l?'không tìm thấy':l.length>1?'trùng tên':''};
+  $('#bkpv').innerHTML=R.length?`<p><small>${R.length} dòng. Dòng có cảnh báo vẫn nhập được nhưng quan hệ bị bỏ trống.</small></p><div style="overflow:auto"><table class="mx"><tr><th>Họ tên</th><th>Giới</th><th>Sinh</th><th>Mất</th><th>Ghi chú kiểm tra</th></tr>`+R.map(o=>{const w=[];
+    if(o.b&&!okDate(nd(o.b)))w.push('ngày sinh sai');if(o.d&&!okDate(nd(o.d)))w.push('ngày mất sai');
+    if(o.g&&!/^(nam|nu|m|f)/.test(norm(o.g)))w.push('giới tính lạ');
+    [['fn','cha'],['mn','mẹ'],['sn','vợ/chồng']].forEach(([k,l])=>{const e=chk(o[k]);if(e)w.push(l+' '+e)});
+    return `<tr><td>${esc(o.name)}</td><td>${esc(o.g||'')}</td><td>${esc(o.b||'')}</td><td>${esc(o.d||'')}</td><td style="text-align:left;color:${w.length?'var(--r)':'inherit'}">${w.length?esc(w.join(', ')):'ổn'}</td></tr>`}).join('')+'</table></div>':'<p class="empty">Chưa có dòng nào.</p>'}
+function candChecks(mut){const keep=db,cp={};for(const k in keep.people)cp[k]={...keep.people[k]};db={...keep,people:cp};try{mut();return checks()}finally{db=keep}}
+const newErrs=after=>{const b0=new Set(checks().filter(x=>x.t=='loi').map(x=>x.id+'|'+x.m));return after.filter(x=>x.t=='loi'&&!b0.has(x.id+'|'+x.m))};
+async function bkGo(){
+  const R=bkParse();if(!R.length)return alert('Chưa có dòng nào để nhập.');
+  const bad=R.filter(o=>(o.b&&!okDate(nd(o.b)))||(o.d&&!okDate(nd(o.d))));if(bad.length)return alert(`Có ${bad.length} dòng sai định dạng ngày (VD: ${bad[0].name}). Bấm “Xem trước” để xem và sửa.`);
+  $('#dg').close();importRows(R)}
+
+/* ---------- Gắn vào giao diện ---------- */
+Object.assign(A,{
+  goto:i=>{const e=document.getElementById(i);if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},frep:gx(()=>{v='rep';render();scrollTo(0,0)}),frepb:()=>{v='fund';render()},fsub:i=>{fsub=i;render()},asub:i=>{ach_sub=i;render()},
+  fnew:i=>fnewDlg(i),fedit:i=>{const x=fund.tx.find(z=>z.id==i);if(x)fnewDlg(x.t,x)},fsave:i=>fsave(i),fdel:i=>fdel(i),
+  fdet:i=>fdetDlg(i),fbulk:()=>fbulkDlg(),fbprev:fbPrev,fbgo:fbGo,fxls:gx(()=>fundXls()),
+  achnew:i=>achDlg(null,i),achedit:i=>{const x=fund.ach.find(z=>z.id==i);if(x)achDlg(x)},achsave:i=>achSave(i),achdel:i=>achDel(i),adet:i=>adetDlg(i),
+  hist:i=>histDlg(i),undo:i=>{const[a,b]=i.split(':'),x=(a=='h'?hlogs:logs)[+b];undoEntry(x)},
+  bulk:()=>bulkDlg(),bkprev:bkPrev,bkgo:bkGo});
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.id=='ffq'){ffq=t.value;render()}if(t.id=='ffy'){ffy=t.value;render()}
+  if(t.id=='afc'){afc=t.value;render()}if(t.id=='afy'){afy=t.value;render()}});
+
 document.addEventListener('submit',e=>{e.preventDefault();submitForm(e.target)});
 document.addEventListener('input',e=>{if(e.target.id=='q')$('#res').innerHTML=rows(e.target.value)});
 document.addEventListener('change',e=>{const t=e.target;
+  if(t.name=='ph'&&t.type=='file'&&t.files[0]&&$('#avprev')){const f=t.files[0],s=$('#dg form [name=fr]');
+    openCrop(URL.createObjectURL(f),{pick:false,cur:s?s.value:'',done:u=>{formPh={u};$('#avprev').innerHTML=`<img class="av fr-${(s&&s.value)||frameDef}" src="${u}" alt="">`},cancel:()=>{t.value=''}})}
+  if(t.id=='setph'&&t.files[0]){const pid=t.dataset.pid,f=t.files[0],p=P()[pid];t.value='';openCrop(URL.createObjectURL(f),{pick:canEdit(),cur:p.fr||'',done:(u,c)=>frDone(pid,u,c)})}
   if(t.id=='addph'&&t.files.length){addPhotos(t.dataset.pid,[...t.files]);t.value=''}
   if(t.id=='adddoc'&&t.files.length){addDocs(t.dataset.pid,[...t.files]);t.value=''}
   if(t.id=='tlf'){tlf=t.value;tln=150;render()}
@@ -934,6 +1510,8 @@ document.addEventListener('change',e=>{const t=e.target;
   if(t.dataset&&t.dataset.exp){memOp({email:t.dataset.exp,export:t.checked})}
   if(t.name=='dead')toggleDead(t.form);
   if(t.id=='rmme')api('remindme',{off:!t.checked}).then(r=>{remindMe=r.remindMe;msg('Đã lưu')}).catch(fail);
+  if(t.classList&&t.classList.contains('wzf')){const w=WZ();w.d=w.d||{};w.d[t.dataset.k]=t.value.trim();wzSave(w);if(t.dataset.k=='cid'){const m=$('#wzcidm');if(m)m.innerHTML=wzCidMsg(t.value)}}
+  if(t.dataset&&t.dataset.wz){const k=t.dataset.wz;if(t.value)localStorage[k]=t.value;else localStorage.removeItem(k);render();msg('Đã lưu')}
   if(t.id=='sstart'){localStorage.gpstart=t.value;msg('Đã lưu')}
   if(t.id&&/^pp[a-z]+$/.test(t.id)&&$('#ppinfo')&&$('#ppmode'))ppUI();
   if(t.id=='thm'){localStorage.gpthm=t.value;render()}
@@ -942,7 +1520,7 @@ document.addEventListener('change',e=>{const t=e.target;
   if(t.id=='lim'){localStorage.gpl=t.value;EX.clear();render()}
   if(t.id=='xhs'){const a=P()[t.dataset.aid],b=P()[t.value];$('#xhr').innerHTML=b?`<p><b>${esc(a.name)}</b> gọi <b>${esc(b.name)}</b> là: <span class="xh">${esc(rel(a,b))}</span></p><p><b>${esc(b.name)}</b> gọi <b>${esc(a.name)}</b> là: <span class="xh">${esc(rel(b,a))}</span></p>`:''}
   if(t.id=='rt'){localStorage.gpr=t.value;render()}
-  if(t.id=='imp'&&t.files[0])t.files[0].text().then(s=>{try{const d=JSON.parse(s);if(!d.people)throw 0;if(!canEdit())return msg('Bạn không có quyền nhập dữ liệu');const c=cleanDb(d),n=Object.keys(c.people).length;if(!n||!confirm(`Nhập ${n} người từ tệp, thay thế toàn bộ dữ liệu hiện tại?`))return;db=c;save();msg('Đã nhập dữ liệu')}catch{msg('Tệp không hợp lệ')}})});
+  if(t.id=='imp'&&t.files[0])t.files[0].text().then(s=>{try{const d=JSON.parse(s);if(!d.people)throw 0;if(!canEdit())return msg('Bạn không có quyền nhập dữ liệu');const c=cleanDb(d),n=Object.keys(c.people).length;if(!n||!confirm(`Nhập ${n} người từ tệp, thay thế toàn bộ dữ liệu hiện tại?`))return;db=c;save();if(d.fund&&Array.isArray(d.fund.tx||[])&&Array.isArray(d.fund.ach||[])&&((d.fund.tx||[]).length||(d.fund.ach||[]).length)){const fo=()=>fundOps([{o:'set',f:d.fund}]);(SRV()?pushNow().then(fo):fo()).catch(fail)}msg('Đã nhập dữ liệu')}catch{msg('Tệp không hợp lệ')}})});
 
 /* ---------- GEDCOM ---------- */
 const GM=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
@@ -1114,13 +1692,13 @@ async function boot(){
   try{const r=await api('load');
     if(r.err=='denied'){role='';deny='Tài khoản '+jwtMail()+' chưa được quản trị viên mời. Hãy nhờ quản trị viên thêm email này.';return render()}
     if(r.err){role='';deny='Lỗi: '+r.err;return render()}
-    const local=db;role=r.role;me=r.me;rev=r.rev;db=r.db;snap0=JSON.stringify(r.db);queue=r.queue||[];members=r.members||{};contact=r.contact||{};exportMap=r.exports||{};perm=r.perm||{};if(r.notify)notify=r.notify;vmap=r.vis||{};if(r.defaults)defs=r.defaults;if(r.remind)remind=r.remind;shares=r.shares||[];remindMe=r.remindMe!==false;isOwner=!!r.owner;
+    const local=db;role=r.role;me=r.me;rev=r.rev;db=r.db;snap0=JSON.stringify(r.db);queue=r.queue||[];members=r.members||{};contact=r.contact||{};exportMap=r.exports||{};perm=r.perm||{};if(r.notify)notify=r.notify;vmap=r.vis||{};if(r.frame&&FRS[r.frame]){frameDef=r.frame;try{localStorage.gpfrg=frameDef}catch(e){}}bgc=r.bg&&typeof r.bg=='object'?r.bg:{};try{localStorage.gpbg=JSON.stringify(bgc)}catch(e){}if(r.defaults)defs=r.defaults;if(r.remind)remind=r.remind;shares=r.shares||[];remindMe=r.remindMe!==false;isOwner=!!r.owner;
     if(role=='quan-tri'&&!Object.keys(db.people).length&&Object.keys(local.people).length&&confirm('Máy chủ còn trống. Đưa '+Object.keys(local.people).length+' người đang có trên máy này lên máy chủ?')){db=local;await pushNow()}
     if(role=='quan-tri'&&localStorage.gpdirty&&(local.updated||0)>(db.updated||0)&&Object.keys(local.people).length){
       if(confirm('Máy này có thay đổi chưa được lưu lên máy chủ (do mất mạng hoặc phiên đăng nhập hết hạn).\n\nOK: dùng bản trên máy này và lưu lên máy chủ (ghi đè bản trên máy chủ).\nHuỷ: bỏ thay đổi này và dùng bản trên máy chủ.')){db=local;await pushNow()}else localStorage.removeItem('gpdirty')}
     else localStorage.removeItem('gpdirty');
-    localStorage.gp=JSON.stringify(db);localStorage.gprole=role;offline=false;render();if(role=='quan-tri')flushImgs().catch(fail)
-  }catch(e){if(e&&e.err=='auth')return;if(localStorage.gprole){role='xem';offline=true;try{db=JSON.parse(localStorage.gp)}catch(x){}render()}else fail(e)}}
+    localStorage.gp=JSON.stringify(db);localStorage.gprole=role;try{localStorage.gpvis=JSON.stringify(vmap)}catch(e){}offline=false;render();if(role=='quan-tri')flushImgs().catch(fail);wzResume();loadFund().catch(()=>{})
+  }catch(e){if(e&&e.err=='auth')return;if(localStorage.gprole){role='xem';offline=true;try{db=JSON.parse(localStorage.gp)}catch(x){}try{vmap=JSON.parse(localStorage.gpvis||'{}')}catch(x){}render()}else fail(e)}}
 async function memOp(x){
   try{const r=await api('member',x);if(r.err){msg('Không lưu được phân quyền: '+r.err);return boot()}members=r.members;contact=r.contact;exportMap=r.exports||{};render();msg('Đã lưu phân quyền')}catch(e){if(!e||e.err!='auth')fail(e)}}
 async function pushNow(tries=0){
@@ -1137,7 +1715,8 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();inst=e;if(v
 window.addEventListener('online',()=>{if(offline)location.reload()});
 if('serviceWorker' in navigator&&location.protocol.indexOf('http')==0)navigator.serviceWorker.register('sw.js').catch(()=>{});
 if(SHARE){api('shared',{token:SHARE.t}).then(r=>{if(r.err){role='';deny=r.err;return render()}db={people:r.people,updated:0};shareName=r.name;render()}).catch(()=>{role='';deny='Không tải được bản chia sẻ, hãy thử lại sau.';render()})}
-else{render();msg();if(SRV()&&idt)boot()}
+else{if(role=='local')fundLocalLoad();render();msg();if(SRV()&&idt)boot();wzAuto()}
+document.addEventListener('close',e=>{if(e.target&&e.target.id=='dg'&&$('#dg .wz')&&!wzKeep){const w=WZ();if(w.act){w.act=false;wzSave(w)}}wzKeep=false},true);
 </script>
 </body>
 </html>

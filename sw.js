@@ -1,5 +1,5 @@
 // Gia phả: lưu sẵn giao diện để mở được khi không có mạng. Đổi V khi muốn buộc tải lại bản mới.
-const V = 'giapha-v5';
+const V = 'giapha-v12';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => {})))).then(() => self.skipWaiting()));
