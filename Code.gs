@@ -4,11 +4,13 @@
  * Cách dùng: script.google.com > Dự án mới > dán toàn bộ tệp này > điền CLIENT_ID bên dưới >
  * Triển khai > Tùy chọn triển khai mới > Ứng dụng web > Thực thi với tư cách: Tôi; Quyền truy cập: Bất kỳ ai
  * > Triển khai > cấp quyền > sao chép URL (kết thúc bằng /exec) dán vào ứng dụng.
+ * CHẠY TRỰC TIẾP TRÊN GOOGLE (không cần GitHub Pages): thêm tệp HTML tên "Index" (Tệp > + > HTML),
+ * dán nội dung apps-script/Index.html vào, Triển khai lại. Khi đó mở chính địa chỉ /exec là dùng được app.
  * Mọi quyền được kiểm tra tại đây: người lạ không đọc hay ghi được dù biết địa chỉ.
  */
 const CLIENT_ID = 'DÁN_CLIENT_ID_VÀO_ĐÂY.apps.googleusercontent.com';
 const FILE = 'giapha-data.json', FOLDER = 'giapha-anh';
-const FIELDS = ['name', 'hu', 'tu', 'th', 'bd', 'src', 'cf', 'g', 'b', 'bp', 'pl', 'chi', 'd', 'gd', 'gm', 'bur', 'dead', 'rs', 'tel', 'mail', 'ct', 'job', 'edu', 'wp', 'fid', 'mid', 'sid', 'xs', 'note', 'ph'];
+const FIELDS = ['name', 'hu', 'tu', 'th', 'bd', 'src', 'cf', 'g', 'b', 'bp', 'pl', 'chi', 'd', 'gd', 'gm', 'bur', 'dead', 'rs', 'tel', 'mail', 'ct', 'job', 'edu', 'wp', 'fid', 'mid', 'sid', 'xs', 'note', 'ph', 'fr'];
 
 // Làm sạch nội dung do thành viên gửi lên: chỉ nhận các trường đã biết, giới hạn độ dài, bỏ quan hệ trỏ tới người không tồn tại
 const MAXLEN = { xs: 300, src: 500, hu: 100, tu: 100, th: 100, bd: 200, cf: 2, note: 2000, bur: 300, pl: 300, bp: 300, rs: 300, ct: 300, wp: 300, job: 200, edu: 200, mail: 200, chi: 100 };
@@ -19,6 +21,8 @@ function clean_(person, db, pid) {
     if (k == 'ph' || person[k] === undefined || person[k] === null) return;
     o[k] = String(person[k]).slice(0, MAXLEN[k] || 100);
   });
+  delete o.fr; // khung ảnh do quản trị viên quyết định, thành viên không đặt được
+  if (person.ph === '') o.ph = ''; else if (okImg_(person.ph)) o.ph = person.ph; // '' = xin xoá ảnh đại diện
   if (o.g && o.g != 'm' && o.g != 'f') o.g = 'm';
   if (o.cf && o.cf != 'kc' && o.cf != 'nv') o.cf = '';
   ['fid', 'mid', 'sid'].forEach(k => { if (o[k] && (o[k] == pid || !db.people[o[k]])) o[k] = ''; });
@@ -26,6 +30,8 @@ function clean_(person, db, pid) {
   return o;
 }
 const MAX_PENDING = 30;
+// Ảnh đại diện gửi kèm đề xuất: chỉ nhận ảnh nhỏ dạng data URL, tối đa 40.000 ký tự
+function okImg_(s) { return typeof s == 'string' && s.length <= 40000 && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(s); }
 
 // Thông tin liên hệ: chỉ quản trị viên và người được cấp quyền mới nhận được (máy chủ cắt bỏ trước khi gửi đi)
 const CONTACT = ['rs', 'tel', 'mail', 'ct', 'wp'];
@@ -36,7 +42,7 @@ function strip_(db) {
 }
 
 // ---- Thông báo email (chỉ gửi tên người, loại thay đổi, tên trường; không gửi nội dung như số điện thoại) ----
-const LBL = { name: 'Họ tên', hu: 'Tên húy', tu: 'Tên tự', th: 'Tên thụy, hiệu', bd: 'Tên gọi khác', src: 'Nguồn', cf: 'Độ tin cậy', g: 'Giới tính', b: 'Ngày sinh', bp: 'Nơi sinh', pl: 'Quê quán', chi: 'Chi, phái', d: 'Ngày mất', gd: 'Giỗ (ngày)', gm: 'Giỗ (tháng)', bur: 'Nơi an táng', dead: 'Đã mất', rs: 'Nơi ở hiện tại', tel: 'Điện thoại', mail: 'Email', ct: 'Liên hệ khác', job: 'Nghề nghiệp', edu: 'Học vấn', wp: 'Nơi làm việc', fid: 'Cha', mid: 'Mẹ', sid: 'Vợ/chồng', xs: 'Vợ/chồng khác', note: 'Ghi chú', fl: 'Tài liệu' };
+const LBL = { fr: 'Khung ảnh', ph: 'Ảnh đại diện', name: 'Họ tên', hu: 'Tên húy', tu: 'Tên tự', th: 'Tên thụy, hiệu', bd: 'Tên gọi khác', src: 'Nguồn', cf: 'Độ tin cậy', g: 'Giới tính', b: 'Ngày sinh', bp: 'Nơi sinh', pl: 'Quê quán', chi: 'Chi, phái', d: 'Ngày mất', gd: 'Giỗ (ngày)', gm: 'Giỗ (tháng)', bur: 'Nơi an táng', dead: 'Đã mất', rs: 'Nơi ở hiện tại', tel: 'Điện thoại', mail: 'Email', ct: 'Liên hệ khác', job: 'Nghề nghiệp', edu: 'Học vấn', wp: 'Nơi làm việc', fid: 'Cha', mid: 'Mẹ', sid: 'Vợ/chồng', xs: 'Vợ/chồng khác', note: 'Ghi chú', fl: 'Tài liệu' };
 const OPV = { add: 'thêm người', edit: 'sửa thông tin', del: 'xoá người' };
 function nt_(d) { return Object.assign({ admin: true, member: true, url: '' }, d.notify || {}); }
 function mail_(to, subject, body) {
@@ -51,13 +57,16 @@ function link_(n) { return n.url ? '\n\nMở ứng dụng: ' + n.url : ''; }
 function changed_(a, b) { return FIELDS.filter(k => String(a[k] || '') != String(b[k] || '')); }
 function albumIds_(p) { return (p.al || []).map(x => x.id).join(','); }
 function flIds_(p) { return (p.fl || []).map(x => x.id).join(','); }
+// Giá trị cũ chỉ nằm trong nhật ký (chỉ quản trị viên đọc được) để quản trị viên hoàn tác một sửa đổi; không lưu ảnh
+function oldVals_(a, f) { const o = {}; f.forEach(k => { if (k != 'ph' && FIELDS.indexOf(k) >= 0) o[k] = String(a[k] || '').slice(0, 500); }); return o; }
+function snap_(a) { const o = oldVals_(a, FIELDS); o.id = a.id; return o; }
 function diff_(a, b) {
   const A = (a && a.people) || {}, B = (b && b.people) || {}, out = [];
   for (const k in B) {
-    if (!A[k]) out.push({ act: 'them', n: B[k].name });
-    else { const f = changed_(A[k], B[k]); if (albumIds_(A[k]) != albumIds_(B[k])) f.push('al'); if (flIds_(A[k]) != flIds_(B[k])) f.push('fl'); if (f.length) out.push({ act: 'sua', n: B[k].name, f: f }); }
+    if (!A[k]) out.push({ act: 'them', n: B[k].name, id: k });
+    else { const f = changed_(A[k], B[k]); if (albumIds_(A[k]) != albumIds_(B[k])) f.push('al'); if (flIds_(A[k]) != flIds_(B[k])) f.push('fl'); if (f.length) out.push({ act: 'sua', n: B[k].name, id: k, f: f, old: oldVals_(A[k], f) }); }
   }
-  for (const k in A) if (!B[k]) out.push({ act: 'xoa', n: A[k].name });
+  for (const k in A) if (!B[k]) out.push({ act: 'xoa', n: A[k].name, id: k, p: snap_(A[k]) });
   return out;
 }
 function log_(d, arr) { d.log = (d.log || []).concat(arr).slice(-500); }
@@ -108,7 +117,7 @@ function backup_(d, why) {
     const now = Date.now();
     if (!why && d.lastBk && now - d.lastBk < 20 * 3600000) return false;
     const f = bkFolder_(), stamp = new Date(now + 7 * 3600000).toISOString().replace(/[-:T]/g, '').slice(0, 14);
-    f.createFile('giapha-' + stamp + (why ? '-' + why : '') + '.json', JSON.stringify({ at: now, rev: d.rev, n: Object.keys(d.db.people).length, db: d.db }), 'application/json');
+    f.createFile('giapha-' + stamp + (why ? '-' + why : '') + '.json', JSON.stringify({ at: now, rev: d.rev, n: Object.keys(d.db.people).length, db: d.db, fund: d.fund || undefined }), 'application/json');
     d.lastBk = now;
     const all = []; const it = f.getFiles(); while (it.hasNext()) { const x = it.next(); all.push({ f: x, n: x.getName() }); }
     all.sort((a, b) => a.n < b.n ? 1 : -1); all.slice(BKKEEP).forEach(x => x.f.setTrashed(true));
@@ -158,6 +167,9 @@ function daily_(nowMs, force) {
     return sent;
   } finally { lock.releaseLock(); }
 }
+function ensureTrigger_() {
+  if (!ScriptApp.getProjectTriggers().some(t => t.getHandlerFunction() == 'daily_')) ScriptApp.newTrigger('daily_').timeBased().everyDays(1).atHour(7).create();
+}
 function setupReminders() {
   ScriptApp.getProjectTriggers().forEach(t => { if (t.getHandlerFunction() == 'daily_') ScriptApp.deleteTrigger(t); });
   ScriptApp.newTrigger('daily_').timeBased().everyDays(1).atHour(7).create();
@@ -193,6 +205,25 @@ function shared_(q) {
   return { name: P[sh.root].name, depth: sh.depth || 0, people: out };
 }
 
+// ---- Quỹ họ, quỹ khuyến học, thành tích: lưu riêng trong d.fund, không nằm trong d.db nên không lọt vào liên kết chia sẻ nhánh ----
+const BGK = ['none', 'giay', 'xanh', 'hong', 'la', 'troi', 'hoang', 'cham', 'luoi', 'img'];
+const FRAMES = ['circle', 'oval', 'ovalh', 'rounded', 'square', 'portrait', 'landscape'];
+const ACAT = ['hoc-tap', 'thi', 'tot-nghiep', 'nghe-nghiep', 'the-thao', 'van-nghe', 'khac'];
+const SIDRE = /^[A-Za-z0-9_-]{1,40}$/;
+function fund_(d) { d.fund = d.fund || {}; d.fund.tx = d.fund.tx || []; d.fund.ach = d.fund.ach || []; return d.fund; }
+function dateOk_(s) { return /^\d{4}(-\d\d(-\d\d)?)?$/.test(s || ''); }
+function cleanTx_(x, d) {
+  if (!x || !SIDRE.test(String(x.id || ''))) return null;
+  const amt = Math.round(+x.amt);
+  if (!(amt >= 1 && amt <= 1e12) || !/^\d{4}-\d\d-\d\d$/.test(x.d || '')) return null;
+  return { id: x.id, f: x.f == 'kh' ? 'kh' : 'ho', t: x.t == 'chi' ? 'chi' : 'thu', d: x.d, pid: x.pid && d.db.people[x.pid] ? x.pid : '', who: String(x.who || '').slice(0, 100), amt: amt, note: String(x.note || '').slice(0, 300), ref: SIDRE.test(String(x.ref || '')) ? x.ref : '' };
+}
+function cleanAch_(x, d) {
+  if (!x || !SIDRE.test(String(x.id || '')) || !x.pid || !d.db.people[x.pid] || !dateOk_(x.d) || !String(x.title || '').trim()) return null;
+  return { id: x.id, pid: x.pid, d: x.d, k: ACAT.indexOf(x.k) >= 0 ? x.k : 'khac', title: String(x.title).trim().slice(0, 200), lv: String(Math.min(5, Math.max(0, parseInt(x.lv) || 0))), aw: Math.max(0, Math.min(1e12, Math.round(+x.aw) || 0)), note: String(x.note || '').slice(0, 500) };
+}
+function fundSee_(d, role, me, f) { return role == 'quan-tri' || !!(d.vis && d.vis[role] && d.vis[role][f] === true); }
+
 function owner_() { return Session.getEffectiveUser().getEmail().toLowerCase(); }
 function file_() {
   const it = DriveApp.getFilesByName(FILE);
@@ -212,19 +243,45 @@ function who_(t) {
   return j.aud == CLIENT_ID && String(j.email_verified) == 'true' ? String(j.email).toLowerCase() : null;
 }
 
-function doGet() { return out_({ ok: true, msg: 'Gia pha server' }); }
+// Mở địa chỉ /exec: nếu dự án có tệp HTML "Index" thì trả về giao diện app (chạy thẳng trên Google, dữ liệu ở Drive),
+// nếu không thì trả lời như máy chủ cũ để bản app đặt trên GitHub Pages vẫn dùng được.
+function doGet(e) {
+  let html;
+  try { html = HtmlService.createHtmlOutputFromFile('Index').getContent(); } catch (x) { return out_({ ok: true, msg: 'Gia pha server' }); }
+  const p = (e && e.parameter) || {}, share = /^[A-Za-z0-9]{8,64}$/.test(String(p.share || '')) ? String(p.share) : '';
+  const cfg = { url: ScriptApp.getService().getUrl(), cid: CLIENT_ID, share: share };
+  const js = JSON.stringify(cfg).replace(/</g, '\\u003c');
+  html = html.replace('/*GAS_CFG*/null', () => js);
+  return HtmlService.createHtmlOutput(html).setTitle('Gia phả')
+    .addMetaTag('viewport', 'width=device-width,initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
+}
+
+// Xử lý chung cho cả hai đường: fetch POST (bản GitHub Pages) và google.script.run (bản chạy trên Google)
+function handle_(q) {
+  if (!q || typeof q != 'object') return { err: 'Dữ liệu gửi lên không hợp lệ' };
+  if (q.a == 'ping') return { ok: true, cid: CLIENT_ID, ver: 8 }; // trình cài đặt dùng để kiểm tra kết nối và Client ID
+  if (q.a == 'shared') return shared_(q);
+  const me = who_(q.t);
+  if (!me) return { err: 'auth' };
+  const lock = LockService.getScriptLock();
+  let got = false;
+  try { lock.waitLock(20000); got = true; return run_(q, me); }
+  catch (x) { return { err: got ? String(x) : 'Máy chủ đang bận, hãy thử lại sau ít giây' }; }
+  finally { if (got) lock.releaseLock(); }
+}
 
 function doPost(e) {
   let q;
   try { q = JSON.parse(e.postData.contents); } catch (x) { return out_({ err: 'Dữ liệu gửi lên không hợp lệ' }); }
-  if (q && q.a == 'shared') return out_(shared_(q));
-  const me = who_(q.t);
-  if (!me) return out_({ err: 'auth' });
-  const lock = LockService.getScriptLock();
-  let got = false;
-  try { lock.waitLock(20000); got = true; return out_(run_(q, me)); }
-  catch (x) { return out_({ err: got ? String(x) : 'Máy chủ đang bận, hãy thử lại sau ít giây' }); }
-  finally { if (got) lock.releaseLock(); }
+  return out_(handle_(q));
+}
+
+// Giao diện chạy trên Google gọi hàm này qua google.script.run; nhận và trả chuỗi JSON (giữ nguyên kiểu dữ liệu)
+function api(body) {
+  let q;
+  try { q = JSON.parse(String(body)); } catch (x) { return JSON.stringify({ err: 'Dữ liệu gửi lên không hợp lệ' }); }
+  return JSON.stringify(handle_(q));
 }
 
 function spouses_(p) { return [p.sid].concat(String(p.xs || '').split(',')).map(i => String(i || '').trim()).filter((i, k, a) => i && a.indexOf(i) == k); }
@@ -255,7 +312,7 @@ function run_(q, me) {
   const admin = role == 'quan-tri', A = q.a;
   const contact = admin || !!(d.contact && d.contact[me]);
 
-  if (A == 'load') return { role: role, me: me, rev: d.rev, db: contact ? d.db : strip_(d.db), queue: admin ? d.queue : d.queue.filter(x => x.by == me), members: admin ? d.members : undefined, contact: admin ? (d.contact || {}) : undefined, vis: d.vis || {}, defaults: admin ? (d.defaults || { role: 'de-xuat', contact: false, export: false }) : undefined, notify: admin ? nt_(d) : undefined, remind: admin ? rm_(d) : undefined, shares: admin ? shareList_(d) : undefined, remindMe: !(d.remindOff && d.remindOff[me]), owner: me == owner_(), exports: admin ? (d.exports || {}) : undefined, perm: { propose: role != 'xem', contact: contact, export: admin || !!(d.exports && d.exports[me]) } };
+  if (A == 'load') return { role: role, me: me, rev: d.rev, db: contact ? d.db : strip_(d.db), queue: admin ? d.queue : d.queue.filter(x => x.by == me), members: admin ? d.members : undefined, contact: admin ? (d.contact || {}) : undefined, vis: d.vis || {}, frame: d.frame || 'circle', bg: d.bg || {}, defaults: admin ? (d.defaults || { role: 'de-xuat', contact: false, export: false }) : undefined, notify: admin ? nt_(d) : undefined, remind: admin ? rm_(d) : undefined, shares: admin ? shareList_(d) : undefined, remindMe: !(d.remindOff && d.remindOff[me]), owner: me == owner_(), exports: admin ? (d.exports || {}) : undefined, perm: { propose: role != 'xem', contact: contact, export: admin || !!(d.exports && d.exports[me]) } };
 
   if (A == 'getImg') {
     const it = folder_().getFilesByName(q.id + '.jpg');
@@ -277,6 +334,7 @@ function run_(q, me) {
     if (q.op == 'add' && d.db.people[q.pid]) return { err: 'Mã người đã tồn tại' };
     if (q.op != 'add' && !d.db.people[q.pid]) return { err: 'Người này không còn trong gia phả' };
     const person = q.op == 'del' ? null : clean_(q.person || {}, d.db, q.pid);
+    if (!admin && person && person.ph && d.queue.filter(x => x.by == me && x.status == 'cho' && x.person && x.person.ph).length >= 5) return { err: 'Bạn đang có 5 đề xuất ảnh chờ duyệt, hãy đợi quản trị viên xử lý bớt.' };
     if (person) { if (!String(person.name || '').trim()) return { err: 'Thiếu họ tên' }; if (!contact) CONTACT.forEach(k => delete person[k]); }
     d.queue.push({ id: Utilities.getUuid().slice(0, 8), op: q.op, pid: q.pid, person: person, name: String(q.name || (person && person.name) || '').slice(0, 100), by: me, at: Date.now(), status: 'cho', note: String(q.note || '').slice(0, 300) });
     d.queue = d.queue.slice(-300);
@@ -284,7 +342,7 @@ function run_(q, me) {
     write_(d);
     const n = nt_(d);
     if (n.admin && !admin) {
-      const old = d.db.people[q.pid], f = q.op == 'edit' && old && person ? changed_(old, person).filter(k => k != 'ph').map(k => LBL[k] || k) : [];
+      const old = d.db.people[q.pid], f = q.op == 'edit' && old && person ? changed_(old, person).filter(k => person[k] !== undefined).map(k => LBL[k] || k) : [];
       mail_(owner_(), 'Gia phả: đề xuất mới từ ' + me,
         me + ' vừa gửi đề xuất ' + OPV[q.op] + ': "' + (q.name || (person && person.name) || '') + '".' + (f.length ? '\nTrường thay đổi: ' + f.join(', ') : '') + (q.note ? '\nGhi chú: ' + String(q.note).slice(0, 300) : '') + '\n\nHãy vào tab Duyệt để kiểm tra và xác nhận.' + link_(n));
     }
@@ -307,9 +365,64 @@ function run_(q, me) {
     return { remindMe: !d.remindOff[me] };
   }
 
+  if (A == 'fundLoad') {
+    const fd = fund_(d), sf = fundSee_(d, role, me, 'fund'), sa = fundSee_(d, role, me, 'ach');
+    if (!sf && !sa) return { err: 'denied' };
+    return { tx: sf ? fd.tx : [], ach: sa ? fd.ach : [] };
+  }
+
   if (!admin) return { err: 'denied' };
 
-  if (A == 'log') return { log: d.log.slice(-300) };
+  if (A == 'fundOp') {
+    const fd = fund_(d), ops = Array.isArray(q.ops) ? q.ops.slice(0, 500) : [];
+    let nTx = 0, nAch = 0;
+    for (const op of ops) {
+      if (op.o == 'set') {
+        const f = op.f || {};
+        fd.tx = (f.tx || []).slice(0, 20000).map(x => cleanTx_(x, d)).filter(Boolean);
+        fd.ach = (f.ach || []).slice(0, 5000).map(x => cleanAch_(x, d)).filter(Boolean);
+        nTx += fd.tx.length; nAch += fd.ach.length;
+      } else if (op.k == 'tx' || op.k == 'ach') {
+        const L = op.k == 'tx' ? fd.tx : fd.ach;
+        if (op.o == 'del') {
+          const id = String(op.i || '');
+          const had = L.length; fd[op.k] = L.filter(z => z.id != id);
+          if (op.k == 'ach') fd.tx = fd.tx.filter(z => z.ref != id);
+          if (had != fd[op.k].length) { if (op.k == 'tx') nTx++; else nAch++; }
+        } else if (op.o == 'put') {
+          const it = op.k == 'tx' ? cleanTx_(op.i, d) : cleanAch_(op.i, d);
+          if (!it) return { err: 'Dữ liệu quỹ không hợp lệ (kiểm tra số tiền, ngày, người)' };
+          const j = L.findIndex(z => z.id == it.id);
+          if (j >= 0) L[j] = it; else if (L.length < (op.k == 'tx' ? 20000 : 5000)) L.push(it);
+          if (op.k == 'tx') nTx++; else nAch++;
+        }
+      }
+    }
+    if (nTx || nAch) {
+      backup_(d);
+      log_(d, [{ at: Date.now(), by: me, act: nTx && nAch ? 'quy' : nTx ? 'quy' : 'tl', n: (nTx ? nTx + ' khoản thu chi' : '') + (nTx && nAch ? ', ' : '') + (nAch ? nAch + ' thành tích' : '') }]);
+      write_(d);
+    }
+    return { tx: fd.tx, ach: fd.ach };
+  }
+
+  if (A == 'bg') { // hình nền phả đồ (t) và các trang khác (p)
+    const b = q.bg || {}, o = {};
+    ['t', 'p'].forEach(w => {
+      const i = b[w + 'i'];
+      o[w] = BGK.indexOf(b[w]) >= 0 ? b[w] : 'none';
+      o[w + 'i'] = (typeof i == 'string' && i.length <= 80000 && /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(i)) ? i : '';
+      o[w + 'o'] = Math.max(0, Math.min(90, Math.round(+b[w + 'o'] || 0)));
+      if (o[w] == 'img' && !o[w + 'i']) o[w] = 'none';
+    });
+    d.bg = o; write_(d); return { bg: o };
+  }
+  if (A == 'frame') { d.frame = FRAMES.indexOf(q.frame) >= 0 ? q.frame : 'circle'; write_(d); return { frame: d.frame }; } // khung ảnh mặc định cho mọi người
+
+  if (A == 'log') {
+    if (q.id) { const nm = String(q.name || ''); return { log: d.log.filter(x => x.id == q.id || (!x.id && nm && x.n == nm)).slice(-100) }; } // lịch sử của một người
+    return { log: d.log.slice(-300) };
+  }
   if (A == 'notify') {
     const u = String(q.url || '').trim();
     d.notify = { admin: !!q.admin, member: !!q.member, url: /^https:\/\/[^\s<>"']+$/.test(u) ? u.slice(0, 300) : '' };
@@ -320,7 +433,9 @@ function run_(q, me) {
   if (A == 'remind') {
     d.remind = { on: !!q.on, lead: [0, 1, 3, 7].indexOf(+q.lead) >= 0 ? +q.lead : 3, who: q.who == 'all' ? 'all' : 'admin' };
     write_(d);
-    return { remind: d.remind };
+    let trig = 'skip';
+    if (d.remind.on) { try { ensureTrigger_(); trig = 'ok'; } catch (x) { trig = String(x).slice(0, 200); } } // tự tạo lịch chạy hằng ngày, không cần mở Apps Script
+    return { remind: d.remind, trigger: trig };
   }
   if (A == 'putFile') {
     if (!ID_RE.test(String(q.id || '')) || FILE_TYPES.indexOf(q.mime) < 0) return { err: 'Định dạng tệp chưa được hỗ trợ' };
@@ -367,7 +482,10 @@ function run_(q, me) {
   }
   if (A == 'settings') {
     const F = ['tree', 'ev', 'cal', 'ho', 'kin', 'album', 'stat', 'doc'], nv = { xem: {}, 'de-xuat': {} }, qv = q.vis || {}, df = q.defaults || {};
-    ['xem', 'de-xuat'].forEach(r => F.forEach(f => { if (qv[r] && qv[r][f] === false) nv[r][f] = false; }));
+    ['xem', 'de-xuat'].forEach(r => {
+      F.forEach(f => { if (qv[r] && qv[r][f] === false) nv[r][f] = false; });
+      ['fund', 'ach'].forEach(f => { if (qv[r] && qv[r][f] === true) nv[r][f] = true; }); // quỹ và thành tích mặc định ẩn với thành viên, chỉ hiện khi quản trị viên bật
+    });
     d.vis = nv;
     d.defaults = { role: df.role == 'xem' ? 'xem' : 'de-xuat', contact: !!df.contact, export: !!df.export };
     write_(d);
@@ -385,18 +503,20 @@ function run_(q, me) {
   if (A == 'review') {
     const x = d.queue.filter(z => z.id == q.id && z.status == 'cho')[0];
     if (!x) return { err: 'Đề xuất không còn chờ duyệt' };
-    const f = x.op == 'edit' && x.person && d.db.people[x.pid] ? changed_(d.db.people[x.pid], x.person) : undefined;
+    const f = x.op == 'edit' && x.person && d.db.people[x.pid] ? changed_(d.db.people[x.pid], x.person).filter(k => x.person[k] !== undefined) : undefined; // chỉ tính các trường đề xuất thực sự gửi lên
+    const pre = d.db.people[x.pid], oldv = q.ok && pre && f ? oldVals_(pre, f) : undefined, psnap = q.ok && pre && x.op == 'del' ? snap_(pre) : undefined;
     if (q.ok) {
       if (x.op == 'edit' && !d.db.people[x.pid]) return { err: 'Người này đã bị xoá khỏi gia phả' };
       if (x.op == 'add' && d.db.people[x.pid]) return { err: 'Mã người đã tồn tại, hãy từ chối đề xuất này' };
       backup_(d); apply_(d.db, x); d.rev++;
     }
     x.status = q.ok ? 'duyet' : 'tuchoi';
+    if (x.person && x.person.ph) delete x.person.ph; // đã xử lý xong thì bỏ ảnh khỏi hàng đợi cho nhẹ dữ liệu
     if (!q.ok) x.why = String(q.why || '').slice(0, 300);
     const nn = nt_(d);
     if (nn.member && x.by != owner_()) mail_(x.by, 'Gia phả: đề xuất của bạn đã ' + (q.ok ? 'được duyệt' : 'bị từ chối'),
       'Đề xuất ' + OPV[x.op] + ' "' + (x.name || (x.person && x.person.name) || '') + '" đã ' + (q.ok ? 'được quản trị viên duyệt và áp dụng.' : 'bị từ chối.') + (!q.ok && x.why ? '\nLý do: ' + x.why : '') + link_(nn));
-    log_(d, [{ at: Date.now(), by: me, act: q.ok ? 'duyet' : 'tuchoi', from: x.by, op: x.op, n: x.name || (x.person && x.person.name) || '', f: f }]);
+    log_(d, [{ at: Date.now(), by: me, act: q.ok ? 'duyet' : 'tuchoi', from: x.by, op: x.op, n: x.name || (x.person && x.person.name) || '', f: f, id: x.pid, old: oldv, p: psnap }]);
     write_(d);
     return { rev: d.rev, db: d.db, queue: d.queue };
   }
